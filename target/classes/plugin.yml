@@ -1,0 +1,13 @@
+name: BlockPalletGUI
+version: '1.0'
+main: org.example.bte.blockPalletGUI.Main
+api-version: '1.20'
+commands:
+  blockpallet:
+    description: Opens the block pallet GUI.
+    usage: /blockpallet color
+    permission: blockpallet.use
+permissions:
+  blockpallet.use:
+    description: Allows the player to use the blockpallet command.
+    default: true
