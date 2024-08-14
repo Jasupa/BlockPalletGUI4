@@ -32,7 +32,7 @@ public class BlockPalletManager {
         int totalPages = (int) Math.ceil((double) items.length / PAGE_SIZE);
 
         String title = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase() + " Pallet - Page " + (page + 1) + "/" + totalPages;
-        Inventory gui = Bukkit.createInventory(null, 54, title);
+        Inventory gui = Bukkit.createInventory(player, 54, title);
 
         int startIndex = page * PAGE_SIZE;
         int endIndex = Math.min(startIndex + PAGE_SIZE, items.length);
