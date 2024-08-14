@@ -1,10 +1,10 @@
 package org.example.bte.blockPalletGUI;
 
 import com.cryptomorin.xseries.XMaterial;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryClickHandler implements Listener {
