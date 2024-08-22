@@ -528,4 +528,26 @@ public class MenuItems {
 
         return walls.toArray(new ItemStack[0]);
     }
+    public static ItemStack[] getLogs() {
+        // Filter the list to include only logs
+        List<ItemStack> logs = BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && (item.getType().name().endsWith("_LOG") || item.getType().name().endsWith("_WOOD")))
+                .collect(Collectors.toList());
+
+        return logs.toArray(new ItemStack[0]);
+    }
+    public static ItemStack[] getLeaves() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_LEAVES"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getFences() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_FENCE"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
 }

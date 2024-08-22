@@ -5,45 +5,54 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class BlockPalletCommand implements CommandExecutor {
 
-    private final Main plugin;  // Reference to the main plugin class
-    private final BlockPalletManager blockPalletManager;  // Reference to BlockPalletManager
+    private final BlockPalletManager blockPalletManager;
 
-    public BlockPalletCommand(Main plugin, BlockPalletManager blockPalletManager) {
-        this.plugin = plugin;
+    public BlockPalletCommand(BlockPalletManager blockPalletManager) {
         this.blockPalletManager = blockPalletManager;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        plugin.getLogger().info("BlockPallet command received.");
-
-        if (!(sender instanceof Player)) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (args.length > 0) {
+                switch (args[0].toLowerCase()) {
+                    case "color":
+                        blockPalletManager.openBlockPallet(player, 0, "color");
+                        return true;
+                    case "slabs":
+                        blockPalletManager.openBlockPallet(player, 0, "slabs");
+                        return true;
+                    case "stairs":
+                        blockPalletManager.openBlockPallet(player, 0, "stairs");
+                        return true;
+                    case "walls":
+                        blockPalletManager.openBlockPallet(player, 0, "walls");
+                        return true;
+                    case "logs":
+                        blockPalletManager.openBlockPallet(player, 0, "logs");
+                        return true;
+                    case "leaves":
+                        blockPalletManager.openBlockPallet(player, 0, "leaves");
+                        return true;
+                    case "fences":
+                        blockPalletManager.openBlockPallet(player, 0, "fences");
+                        return true;
+                    default:
+                        player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, or /blockpallet fences");
+                        return true;
+                }
+            } else {
+                player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, or /blockpallet fences");
+                return true;
+            }
+        } else {
             sender.sendMessage("This command can only be used by players.");
-            plugin.getLogger().info("Command not sent by player.");
-            return true;
         }
-
-        Player player = (Player) sender;
-        Set<String> validArgs = new HashSet<>(Set.of("color", "slabs", "stairs", "walls"));
-        if (args.length == 0 || !validArgs.contains(args[0])) {
-            player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, or /blockpallet walls");
-            plugin.getLogger().info("Invalid arguments.");
-            return true;
-        }
-
-        plugin.getLogger().info("Argument received: " + args[0]);
-
-        // Open the block pallet GUI for the player
-        blockPalletManager.openBlockPallet(player, 0, args[0]);
-
-        return true;  // Indicate that the command was handled
+        return false;
     }
 }
-
 
 

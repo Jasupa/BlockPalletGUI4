@@ -12,14 +12,8 @@ public final class Main extends JavaPlugin {
 
         // Initialize BlockPalletManager
         this.blockPalletManager = new BlockPalletManager();
+        getCommand("blockpallet").setExecutor(new BlockPalletCommand(blockPalletManager));
 
-        registerCommands();
-        registerListeners();
-    }
-
-    private void registerCommands() {
-        // Register the BlockPalletCommand class as the executor for the blockpallet command
-        this.getCommand("blockpallet").setExecutor(new BlockPalletCommand(this, this.blockPalletManager));
     }
 
     private void registerListeners() {

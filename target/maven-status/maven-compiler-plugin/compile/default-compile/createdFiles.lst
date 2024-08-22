@@ -1,1 +1,4 @@
+org\example\bte\blockPalletGUI\BlockPalletCommand.class
+org\example\bte\blockPalletGUI\BlockPalletManager.class
 org\example\bte\blockPalletGUI\Main.class
+org\example\bte\blockPalletGUI\InventoryClickHandler.class
