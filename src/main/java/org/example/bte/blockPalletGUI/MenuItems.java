@@ -549,5 +549,45 @@ public class MenuItems {
                 .collect(Collectors.toList())
                 .toArray(new ItemStack[0]);
     }
+    public static ItemStack[] getGlass() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_GLASS") || item.getType().name().endsWith("_STAINED_GLASS"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getCarpet() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_CARPET"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getWool() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_WOOL"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+    public static ItemStack[] getTerracotta() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_TERRACOTTA"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getConcrete() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_CONCRETE"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getConcretePowder() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_CONCRETE_POWDER"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
 
 }

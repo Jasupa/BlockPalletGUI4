@@ -34,6 +34,24 @@ public class BlockPalletManager {
             case "fences":
                 items = MenuItems.getFences();
                 break;
+            case "glass":
+                items = MenuItems.getGlass();
+                break;
+            case "carpet":
+                items = MenuItems.getCarpet();
+                break;
+            case "wool":
+                items = MenuItems.getWool();
+                break;
+            case "terracotta":
+                items = MenuItems.getTerracotta();
+                break;
+            case "concrete":
+                items = MenuItems.getConcrete();
+                break;
+            case "concrete_powder":
+                items = MenuItems.getConcretePowder();
+                break;
             default:
                 items = MenuItems.getBlocksByColor();
         }
@@ -69,3 +87,4 @@ public class BlockPalletManager {
         return item;
     }
 }
+
