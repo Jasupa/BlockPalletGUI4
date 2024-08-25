@@ -491,7 +491,74 @@ public class MenuItems {
             XMaterial.OAK_BUTTON.parseItem(),
             XMaterial.STRIPPED_JUNGLE_LOG.parseItem(),
             XMaterial.STRIPPED_JUNGLE_WOOD.parseItem(),
-            XMaterial.BROWN_GLAZED_TERRACOTTA.parseItem()
+            XMaterial.BROWN_GLAZED_TERRACOTTA.parseItem(),
+            XMaterial.BLACK_CANDLE.parseItem(),
+            XMaterial.BLUE_CANDLE.parseItem(),
+            XMaterial.BROWN_CANDLE.parseItem(),
+            XMaterial.CYAN_CANDLE.parseItem(),
+            XMaterial.GRAY_CANDLE.parseItem(),
+            XMaterial.GREEN_CANDLE.parseItem(),
+            XMaterial.LIGHT_BLUE_CANDLE.parseItem(),
+            XMaterial.LIGHT_GRAY_CANDLE.parseItem(),
+            XMaterial.LIME_CANDLE.parseItem(),
+            XMaterial.MAGENTA_CANDLE.parseItem(),
+            XMaterial.ORANGE_CANDLE.parseItem(),
+            XMaterial.PINK_CANDLE.parseItem(),
+            XMaterial.PURPLE_CANDLE.parseItem(),
+            XMaterial.RED_CANDLE.parseItem(),
+            XMaterial.WHITE_CANDLE.parseItem(),
+            XMaterial.YELLOW_CANDLE.parseItem(),
+            XMaterial.BLACK_BED.parseItem(),
+            XMaterial.BLUE_BED.parseItem(),
+            XMaterial.BROWN_BED.parseItem(),
+            XMaterial.CYAN_BED.parseItem(),
+            XMaterial.GRAY_BED.parseItem(),
+            XMaterial.GREEN_BED.parseItem(),
+            XMaterial.LIGHT_BLUE_BED.parseItem(),
+            XMaterial.LIGHT_GRAY_BED.parseItem(),
+            XMaterial.LIME_BED.parseItem(),
+            XMaterial.MAGENTA_BED.parseItem(),
+            XMaterial.ORANGE_BED.parseItem(),
+            XMaterial.PINK_BED.parseItem(),
+            XMaterial.PURPLE_BED.parseItem(),
+            XMaterial.RED_BED.parseItem(),
+            XMaterial.WHITE_BED.parseItem(),
+            XMaterial.YELLOW_BED.parseItem(),
+            XMaterial.BLACK_BANNER.parseItem(),
+            XMaterial.BLUE_BANNER.parseItem(),
+            XMaterial.BROWN_BANNER.parseItem(),
+            XMaterial.CYAN_BANNER.parseItem(),
+            XMaterial.GRAY_BANNER.parseItem(),
+            XMaterial.GREEN_BANNER.parseItem(),
+            XMaterial.LIGHT_BLUE_BANNER.parseItem(),
+            XMaterial.LIGHT_GRAY_BANNER.parseItem(),
+            XMaterial.LIME_BANNER.parseItem(),
+            XMaterial.MAGENTA_BANNER.parseItem(),
+            XMaterial.ORANGE_BANNER.parseItem(),
+            XMaterial.PINK_BANNER.parseItem(),
+            XMaterial.PURPLE_BANNER.parseItem(),
+            XMaterial.RED_BANNER.parseItem(),
+            XMaterial.WHITE_BANNER.parseItem(),
+            XMaterial.YELLOW_BANNER.parseItem(),
+            XMaterial.BLACK_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.BLUE_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.BROWN_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.CYAN_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.GRAY_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.GREEN_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.LIGHT_BLUE_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.LIME_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.MAGENTA_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.ORANGE_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.PINK_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.PURPLE_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.RED_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.WHITE_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.YELLOW_STAINED_GLASS_PANE.parseItem()
+
+
+
     );
     // Method to return blocks by color as an array
     public static ItemStack[] getBlocksByColor() {
@@ -586,6 +653,33 @@ public class MenuItems {
     public static ItemStack[] getConcretePowder() {
         return BLOCKS_BY_COLOR.stream()
                 .filter(item -> item != null && item.getType().name().endsWith("_CONCRETE_POWDER"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+    public static ItemStack[] getBeds() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_BED"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getCandles() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_CANDLE"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getBanners() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_BANNER"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
+    public static ItemStack[] getGlassPanes() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_GLASS_PANE"))
                 .collect(Collectors.toList())
                 .toArray(new ItemStack[0]);
     }

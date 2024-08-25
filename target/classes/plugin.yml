@@ -5,7 +5,7 @@ api-version: '1.20'
 commands:
   blockpallet:
     description: Opens the block pallet GUI.
-    usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, or /blockpallet concrete_powder
+    usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, /blockpallet concrete_powder, /blockpallet bed, /blockpallet candle, /blockpallet banner, or /blockpallet glass_pane
     permission: blockpallet.use
 permissions:
   blockpallet.use:

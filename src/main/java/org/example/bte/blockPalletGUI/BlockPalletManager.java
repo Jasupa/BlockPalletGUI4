@@ -52,6 +52,18 @@ public class BlockPalletManager {
             case "concrete_powder":
                 items = MenuItems.getConcretePowder();
                 break;
+            case "bed":
+                items = MenuItems.getBeds();
+                break;
+            case "candle":
+                items = MenuItems.getCandles();
+                break;
+            case "banner":
+                items = MenuItems.getBanners();
+                break;
+            case "glass_pane":
+                items = MenuItems.getGlassPanes();
+                break;
             default:
                 items = MenuItems.getBlocksByColor();
         }
@@ -87,4 +99,5 @@ public class BlockPalletManager {
         return item;
     }
 }
+
 

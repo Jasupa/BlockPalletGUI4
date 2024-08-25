@@ -58,12 +58,24 @@ public class BlockPalletCommand implements CommandExecutor {
                     case "concrete_powder":
                         blockPalletManager.openBlockPallet(player, 0, "concrete_powder");
                         return true;
+                    case "bed":
+                        blockPalletManager.openBlockPallet(player, 0, "bed");
+                        return true;
+                    case "candle":
+                        blockPalletManager.openBlockPallet(player, 0, "candle");
+                        return true;
+                    case "banner":
+                        blockPalletManager.openBlockPallet(player, 0, "banner");
+                        return true;
+                    case "glass_pane":
+                        blockPalletManager.openBlockPallet(player, 0, "glass_pane");
+                        return true;
                     default:
-                        player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, or /blockpallet concrete_powder");
+                        player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, /blockpallet concrete_powder, /blockpallet bed, /blockpallet candle, /blockpallet banner, or /blockpallet glass_pane");
                         return true;
                 }
             } else {
-                player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, or /blockpallet concrete_powder");
+                player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, /blockpallet concrete_powder, /blockpallet bed, /blockpallet candle, /blockpallet banner, or /blockpallet glass_pane");
                 return true;
             }
         } else {
@@ -72,5 +84,6 @@ public class BlockPalletCommand implements CommandExecutor {
         return false;
     }
 }
+
 
 
