@@ -17,33 +17,38 @@ public class InventoryClickHandler implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getView().getTitle().contains("Pallet")) {
-            event.setCancelled(true);
-            Player player = (Player) event.getWhoClicked();
-            if (event.getCurrentItem() == null) return;
+        String inventoryTitle = event.getView().getTitle();
 
-            ItemStack currentItem = event.getCurrentItem();
-            if (currentItem.getType() == XMaterial.PAPER.parseMaterial()) {
-                String title = event.getView().getTitle();
-                String[] parts = title.split(" ");
-                try {
-                    if (parts.length >= 5 && parts[4].contains("/")) {
-                        String[] pageParts = parts[4].split("/");
-                        int currentPage = Integer.parseInt(pageParts[0]) - 1;
+        if (!inventoryTitle.contains("Pallet")) return;
+        event.setCancelled(true);
 
-                        if (currentItem.getItemMeta().getDisplayName().equals("Previous Page")) {
-                            blockPalletManager.openBlockPallet(player, currentPage - 1, parts[0].toLowerCase());
-                        } else if (currentItem.getItemMeta().getDisplayName().equals("Next Page")) {
-                            blockPalletManager.openBlockPallet(player, currentPage + 1, parts[0].toLowerCase());
-                        }
-                    } else {
-                        player.sendMessage("The inventory title format is incorrect.");
-                    }
-                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                    player.sendMessage("An error occurred while parsing the page number.");
-                    e.printStackTrace();
+        Player player = (Player) event.getWhoClicked();
+        ItemStack currentItem = event.getCurrentItem();
+
+        if (!(currentItem.getType() == XMaterial.PAPER.parseMaterial())) return;
+        String[] splitInventoryTitle = inventoryTitle.split(" ");
+
+        try {
+            if (splitInventoryTitle.length >= 5 && splitInventoryTitle[4].contains("/")) {
+                String[] pageParts = splitInventoryTitle[4].split("/");
+
+                int currentPage = Integer.parseInt(pageParts[0]) - 1;
+                String itemName = currentItem.getItemMeta().getDisplayName();
+                int newPage = currentPage;
+
+                if ("Previous Page".equals(itemName)) {
+                    newPage -= 1;
+                } else if ("Next Page".equals(itemName)) {
+                    newPage += 1;
                 }
+                blockPalletManager.openBlockPallet(player, newPage, splitInventoryTitle[0].toLowerCase());
+            } else {
+                player.sendMessage("The inventory title format is incorrect.");
             }
+
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            player.sendMessage("An error occurred while parsing the page number.");
+            e.printStackTrace();
         }
     }
 }

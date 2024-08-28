@@ -15,73 +15,26 @@ public class BlockPalletCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            if (args.length > 0) {
-                switch (args[0].toLowerCase()) {
-                    case "color":
-                        blockPalletManager.openBlockPallet(player, 0, "color");
-                        return true;
-                    case "slabs":
-                        blockPalletManager.openBlockPallet(player, 0, "slabs");
-                        return true;
-                    case "stairs":
-                        blockPalletManager.openBlockPallet(player, 0, "stairs");
-                        return true;
-                    case "walls":
-                        blockPalletManager.openBlockPallet(player, 0, "walls");
-                        return true;
-                    case "logs":
-                        blockPalletManager.openBlockPallet(player, 0, "logs");
-                        return true;
-                    case "leaves":
-                        blockPalletManager.openBlockPallet(player, 0, "leaves");
-                        return true;
-                    case "fences":
-                        blockPalletManager.openBlockPallet(player, 0, "fences");
-                        return true;
-                    case "glass":
-                        blockPalletManager.openBlockPallet(player, 0, "glass");
-                        return true;
-                    case "carpet":
-                        blockPalletManager.openBlockPallet(player, 0, "carpet");
-                        return true;
-                    case "wool":
-                        blockPalletManager.openBlockPallet(player, 0, "wool");
-                        return true;
-                    case "terracotta":
-                        blockPalletManager.openBlockPallet(player, 0, "terracotta");
-                        return true;
-                    case "concrete":
-                        blockPalletManager.openBlockPallet(player, 0, "concrete");
-                        return true;
-                    case "concrete_powder":
-                        blockPalletManager.openBlockPallet(player, 0, "concrete_powder");
-                        return true;
-                    case "bed":
-                        blockPalletManager.openBlockPallet(player, 0, "bed");
-                        return true;
-                    case "candle":
-                        blockPalletManager.openBlockPallet(player, 0, "candle");
-                        return true;
-                    case "banner":
-                        blockPalletManager.openBlockPallet(player, 0, "banner");
-                        return true;
-                    case "glass_pane":
-                        blockPalletManager.openBlockPallet(player, 0, "glass_pane");
-                        return true;
-                    default:
-                        player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, /blockpallet concrete_powder, /blockpallet bed, /blockpallet candle, /blockpallet banner, or /blockpallet glass_pane");
-                        return true;
-                }
-            } else {
-                player.sendMessage("Usage: /blockpallet color, /blockpallet slabs, /blockpallet stairs, /blockpallet walls, /blockpallet logs, /blockpallet leaves, /blockpallet fences, /blockpallet glass, /blockpallet carpet, /blockpallet wool, /blockpallet terracotta, /blockpallet concrete, /blockpallet concrete_powder, /blockpallet bed, /blockpallet candle, /blockpallet banner, or /blockpallet glass_pane");
-                return true;
-            }
-        } else {
+        if (!(sender instanceof Player)) {
             sender.sendMessage("This command can only be used by players.");
         }
-        return false;
+            Player player = (Player) sender;
+            if (args.length > 0) {
+                blockPalletManager.openBlockPallet(player, 0, args[0].toLowerCase());
+            } else {
+                String[] options = {
+                        "color", "slabs", "stairs", "walls", "logs", "leaves", "fences", "glass",
+                        "carpet", "wool", "terracotta", "concrete", "concrete_powder", "bed",
+                        "candle", "banner", "glass_pane"
+                };
+
+                String optionsList = String.join(" | ", options);
+
+                String usageMessage = String.format("Usage: /blockpallet <%s>", optionsList);
+                player.sendMessage(usageMessage);
+                return true;
+            }
+            return false;
     }
 }
 
