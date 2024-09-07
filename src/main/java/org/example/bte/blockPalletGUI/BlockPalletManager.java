@@ -8,69 +8,42 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.cryptomorin.xseries.XMaterial;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class BlockPalletManager {
 
     private static final int PAGE_SIZE = 45;
 
     public void openBlockPallet(Player player, int page, String type) {
-        ItemStack[] items;
-        switch (type.toLowerCase()) {
-            case "slabs":
-                items = MenuItems.getSlabs();
-                break;
-            case "stairs":
-                items = MenuItems.getStairs();
-                break;
-            case "walls":
-                items = MenuItems.getWalls();
-                break;
-            case "logs":
-                items = MenuItems.getLogs();
-                break;
-            case "leaves":
-                items = MenuItems.getLeaves();
-                break;
-            case "fences":
-                items = MenuItems.getFences();
-                break;
-            case "glass":
-                items = MenuItems.getGlass();
-                break;
-            case "carpet":
-                items = MenuItems.getCarpet();
-                break;
-            case "wool":
-                items = MenuItems.getWool();
-                break;
-            case "terracotta":
-                items = MenuItems.getTerracotta();
-                break;
-            case "concrete":
-                items = MenuItems.getConcrete();
-                break;
-            case "concrete_powder":
-                items = MenuItems.getConcretePowder();
-                break;
-            case "bed":
-                items = MenuItems.getBeds();
-                break;
-            case "candle":
-                items = MenuItems.getCandles();
-                break;
-            case "banner":
-                items = MenuItems.getBanners();
-                break;
-            case "glass_pane":
-                items = MenuItems.getGlassPanes();
-                break;
-            default:
-                items = MenuItems.getBlocksByColor();
-        }
+        // Define the mapping between type and item retrieval method
+        Map<String, Supplier<ItemStack[]>> itemTypeMap = new HashMap<>();
+        itemTypeMap.put("slabs", MenuItems::getSlabs);
+        itemTypeMap.put("stairs", MenuItems::getStairs);
+        itemTypeMap.put("walls", MenuItems::getWalls);
+        itemTypeMap.put("logs", MenuItems::getLogs);
+        itemTypeMap.put("leaves", MenuItems::getLeaves);
+        itemTypeMap.put("fences", MenuItems::getFences);
+        itemTypeMap.put("glass", MenuItems::getGlass);
+        itemTypeMap.put("carpet", MenuItems::getCarpet);
+        itemTypeMap.put("wool", MenuItems::getWool);
+        itemTypeMap.put("terracotta", MenuItems::getTerracotta);
+        itemTypeMap.put("concrete", MenuItems::getConcrete);
+        itemTypeMap.put("concrete_powder", MenuItems::getConcretePowder);
+        itemTypeMap.put("bed", MenuItems::getBeds);
+        itemTypeMap.put("candle", MenuItems::getCandles);
+        itemTypeMap.put("banner", MenuItems::getBanners);
+        itemTypeMap.put("glass_pane", MenuItems::getGlassPanes);
+
+        Supplier<ItemStack[]> itemSupplier = itemTypeMap.getOrDefault(type.toLowerCase(), MenuItems::getBlocksByColor);
+        ItemStack[] items = itemSupplier.get();
+
 
         int totalPages = (int) Math.ceil((double) items.length / PAGE_SIZE);
-        String title = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase() + " Pallet - Page " + (page + 1) + "/" + totalPages;
-        Inventory gui = Bukkit.createInventory(null, 54, title);
+        String formattedType = type.substring(0, 1).toUpperCase() + type.substring(1).toLowerCase();
+        String title = String.format("%s Pallet - Page %d/%d", formattedType, page + 1, totalPages);
+        Inventory gui = Bukkit.createInventory(player, 54, title);
 
         int startIndex = page * PAGE_SIZE;
         int endIndex = Math.min(startIndex + PAGE_SIZE, items.length);
