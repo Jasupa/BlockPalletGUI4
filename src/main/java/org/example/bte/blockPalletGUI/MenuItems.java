@@ -1,7 +1,11 @@
 package org.example.bte.blockPalletGUI;
 
 import com.cryptomorin.xseries.XMaterial;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -555,9 +559,23 @@ public class MenuItems {
             XMaterial.PURPLE_STAINED_GLASS_PANE.parseItem(),
             XMaterial.RED_STAINED_GLASS_PANE.parseItem(),
             XMaterial.WHITE_STAINED_GLASS_PANE.parseItem(),
-            XMaterial.YELLOW_STAINED_GLASS_PANE.parseItem()
-
-
+            XMaterial.YELLOW_STAINED_GLASS_PANE.parseItem(),
+            XMaterial.BLACK_SHULKER_BOX.parseItem(),
+            XMaterial.BLUE_SHULKER_BOX.parseItem(),
+            XMaterial.BROWN_SHULKER_BOX.parseItem(),
+            XMaterial.CYAN_SHULKER_BOX.parseItem(),
+            XMaterial.GRAY_SHULKER_BOX.parseItem(),
+            XMaterial.GREEN_SHULKER_BOX.parseItem(),
+            XMaterial.LIGHT_BLUE_SHULKER_BOX.parseItem(),
+            XMaterial.LIGHT_GRAY_SHULKER_BOX.parseItem(),
+            XMaterial.LIME_SHULKER_BOX.parseItem(),
+            XMaterial.MAGENTA_SHULKER_BOX.parseItem(),
+            XMaterial.ORANGE_SHULKER_BOX.parseItem(),
+            XMaterial.PINK_SHULKER_BOX.parseItem(),
+            XMaterial.PURPLE_SHULKER_BOX.parseItem(),
+            XMaterial.RED_SHULKER_BOX.parseItem(),
+            XMaterial.WHITE_SHULKER_BOX.parseItem(),
+            XMaterial.YELLOW_SHULKER_BOX.parseItem()
 
     );
     // Method to return blocks by color as an array
@@ -683,5 +701,24 @@ public class MenuItems {
                 .collect(Collectors.toList())
                 .toArray(new ItemStack[0]);
     }
+    public static ItemStack[] getSignes() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_SIGN"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+    public static ItemStack[] getShulkerBoxes() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_SHULKER_BOX"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+    public static ItemStack[] getGates() {
+        return BLOCKS_BY_COLOR.stream()
+                .filter(item -> item != null && item.getType().name().endsWith("_GATE"))
+                .collect(Collectors.toList())
+                .toArray(new ItemStack[0]);
+    }
+
 
 }

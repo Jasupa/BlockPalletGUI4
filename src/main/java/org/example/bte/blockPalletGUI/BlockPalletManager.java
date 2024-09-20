@@ -1,6 +1,7 @@
 package org.example.bte.blockPalletGUI;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -69,6 +70,43 @@ public class BlockPalletManager {
             meta.setLore(Collections.singletonList(lore));
             item.setItemMeta(meta);
         }
+        return item;
+    }
+
+
+    public static void openBlockPalletMenu(Player player, String menuType) {
+        Inventory blockPalletMenu = Bukkit.createInventory(null, 27, menuType + " Menu");
+
+        ItemStack[] items;
+
+        switch (menuType.toLowerCase()) {
+            case "slabs":
+                items = MenuItems.getSlabs();
+                break;
+            case "stairs":
+                items = MenuItems.getStairs();
+                break;
+            case "walls":
+                items = MenuItems.getWalls();
+                break;
+            default:
+                items = new ItemStack[0];
+                break;
+        }
+
+
+        for (int i = 0; i < items.length && i < blockPalletMenu.getSize(); i++) {
+            blockPalletMenu.setItem(i, items[i]);
+        }
+
+        player.openInventory(blockPalletMenu);
+    }
+
+    private static ItemStack createMenuItem(Material material, String name) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
         return item;
     }
 }

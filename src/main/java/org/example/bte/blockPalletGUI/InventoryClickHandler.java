@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryClickHandler implements Listener {
@@ -51,6 +52,45 @@ public class InventoryClickHandler implements Listener {
             e.printStackTrace();
         }
     }
+
+    @EventHandler
+    public void onMenuClick(InventoryClickEvent event) {
+        Inventory menu = event.getInventory();
+        Player player = (Player) event.getWhoClicked();
+
+        // Controleer of het hoofdmenu wordt geopend
+        if (event.getView().getTitle().equals("Block Pallet Menu")) {
+            event.setCancelled(true); // Voorkom het verplaatsen van items
+
+            // Controleer of het aangeklikte item niet null of lucht is
+            ItemStack clickedItem = event.getCurrentItem();
+            if (clickedItem == null || clickedItem.getType().isAir()) {
+                return; // Als er geen item is aangeklikt, verlaat de methode
+            }
+
+            // Open het juiste submenu op basis van het aangeklikte item
+            switch (clickedItem.getType()) {
+                case STONE_SLAB:
+                    // Open het Slabs menu
+                    BlockPalletManager.openBlockPalletMenu(player, "slabs");
+                    break;
+                case STONE_STAIRS:
+                    // Open het Stairs menu
+                    BlockPalletManager.openBlockPalletMenu(player, "stairs");
+                    break;
+                case STONE_BRICK_WALL:
+                    // Open het Walls menu
+                    BlockPalletManager.openBlockPalletMenu(player, "walls");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+
+
+
 }
 
 
