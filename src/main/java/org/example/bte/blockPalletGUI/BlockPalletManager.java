@@ -75,39 +75,39 @@ public class BlockPalletManager {
 
 
     public static void openBlockPalletMenu(Player player, String menuType) {
-        Inventory blockPalletMenu = Bukkit.createInventory(null, 27, menuType + " Menu");
+        // Get the corresponding BlockPalletMenuType from the enum
+        BlockPalletMenuType palletMenuType = BlockPalletMenuType.getMenuType(menuType);
 
-        ItemStack[] items;
-
-        switch (menuType.toLowerCase()) {
-            case "slabs":
-                items = MenuItems.getSlabs();
-                break;
-            case "stairs":
-                items = MenuItems.getStairs();
-                break;
-            case "walls":
-                items = MenuItems.getWalls();
-                break;
-            default:
-                items = new ItemStack[0];
-                break;
+        if (palletMenuType == null) {
+            player.sendMessage("Invalid menu type.");
+            return;
         }
 
+        // Create an inventory for the menu
+        Inventory blockPalletMenu = Bukkit.createInventory(null, 27, palletMenuType.getReadableName() + " Menu");
 
+        // Get the items for the menu from the item supplier
+        ItemStack[] items = palletMenuType.getItemSupplier().get();
+
+        // Fill the menu with the items
         for (int i = 0; i < items.length && i < blockPalletMenu.getSize(); i++) {
             blockPalletMenu.setItem(i, items[i]);
         }
 
-        player.openInventory(blockPalletMenu);
-    }
+        // Fill remaining slots with light gray stained glass
+        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName(" ");
+        filler.setItemMeta(fillerMeta);
 
-    private static ItemStack createMenuItem(Material material, String name) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        item.setItemMeta(meta);
-        return item;
+        for (int i = 0; i < blockPalletMenu.getSize(); i++) {
+            if (blockPalletMenu.getItem(i) == null) {
+                blockPalletMenu.setItem(i, filler);
+            }
+        }
+
+        // Open the menu for the player
+        player.openInventory(blockPalletMenu);
     }
 }
 

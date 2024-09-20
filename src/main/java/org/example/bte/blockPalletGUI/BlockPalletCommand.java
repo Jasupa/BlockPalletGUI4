@@ -28,7 +28,7 @@ public class BlockPalletCommand implements CommandExecutor, TabCompleter {
 
         Player player = (Player) sender;
 
-        if (args[0].equalsIgnoreCase("menu")) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("menu")) {
             BlockPalletManager.openBlockPalletMenu(player);
             return true;
         }
