@@ -58,21 +58,23 @@ public class InventoryClickHandler implements Listener {
         Inventory menu = event.getInventory();
         Player player = (Player) event.getWhoClicked();
 
+        // Check if it's the Block Pallet Menu
         if (event.getView().getTitle().equals("Block Pallet Menu")) {
             event.setCancelled(true); // Prevent item movement
 
             ItemStack clickedItem = event.getCurrentItem();
             if (clickedItem == null || clickedItem.getType().isAir()) return;
 
+            // Open the corresponding submenu based on the clicked item
             switch (clickedItem.getType()) {
                 case STONE_SLAB:
-                    BlockPalletManager.openBlockPalletMenu(player, "slabs");
+                    BlockPalletManager.openBlockPalletMenu(player, "slabs"); // Open slabs menu
                     break;
                 case STONE_STAIRS:
-                    BlockPalletManager.openBlockPalletMenu(player, "stairs");
+                    BlockPalletManager.openBlockPalletMenu(player, "stairs"); // Open stairs menu
                     break;
                 case STONE_BRICK_WALL:
-                    BlockPalletManager.openBlockPalletMenu(player, "walls");
+                    BlockPalletManager.openBlockPalletMenu(player, "walls");  // Open walls menu
                     break;
                 default:
                     break;

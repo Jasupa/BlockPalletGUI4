@@ -74,27 +74,52 @@ public class BlockPalletManager {
     }
 
 
-    public static void openBlockPalletMenu(Player player, String menuType) {
-        // Get the corresponding BlockPalletMenuType from the enum
-        BlockPalletMenuType palletMenuType = BlockPalletMenuType.getMenuType(menuType);
+    public static void openBlockPalletMenu(Player player) {
+        Inventory menu = Bukkit.createInventory(null, 27, "Block Pallet Menu");
+
+        // Create buttons for each menu
+        ItemStack slabsButton = createMenuItem(Material.STONE_SLAB, "Slabs Menu");
+        ItemStack stairsButton = createMenuItem(Material.STONE_STAIRS, "Stairs Menu");
+        ItemStack wallsButton = createMenuItem(Material.STONE_BRICK_WALL, "Walls Menu");
+
+        // Place the buttons symmetrically in the inventory
+        menu.setItem(10, slabsButton); // Slot 10 for slabs
+        menu.setItem(13, stairsButton); // Slot 13 for stairs
+        menu.setItem(16, wallsButton);  // Slot 16 for walls
+
+        // Fill empty slots with light gray stained glass
+        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName(" ");
+        filler.setItemMeta(fillerMeta);
+
+        for (int i = 0; i < menu.getSize(); i++) {
+            if (menu.getItem(i) == null) {
+                menu.setItem(i, filler);
+            }
+        }
+
+        // Open the inventory for the player
+        player.openInventory(menu);
+    }
+
+    public static void openBlockPalletMenu(Player player, String menuTypeReadableName) {
+        BlockPalletMenuType palletMenuType = BlockPalletMenuType.getMenuType(menuTypeReadableName);
 
         if (palletMenuType == null) {
             player.sendMessage("Invalid menu type.");
             return;
         }
 
-        // Create an inventory for the menu
         Inventory blockPalletMenu = Bukkit.createInventory(null, 27, palletMenuType.getReadableName() + " Menu");
 
-        // Get the items for the menu from the item supplier
+        // Get the items from the enum's item supplier
         ItemStack[] items = palletMenuType.getItemSupplier().get();
 
-        // Fill the menu with the items
         for (int i = 0; i < items.length && i < blockPalletMenu.getSize(); i++) {
             blockPalletMenu.setItem(i, items[i]);
         }
 
-        // Fill remaining slots with light gray stained glass
         ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta fillerMeta = filler.getItemMeta();
         fillerMeta.setDisplayName(" ");
@@ -106,8 +131,17 @@ public class BlockPalletManager {
             }
         }
 
-        // Open the menu for the player
         player.openInventory(blockPalletMenu);
+    }
+
+
+    // Helper method to create an item representing a button
+    private static ItemStack createMenuItem(Material material, String name) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
+        return item;
     }
 }
 
