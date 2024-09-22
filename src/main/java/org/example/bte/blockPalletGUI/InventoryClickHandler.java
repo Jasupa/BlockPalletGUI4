@@ -58,34 +58,73 @@ public class InventoryClickHandler implements Listener {
         Inventory menu = event.getInventory();
         Player player = (Player) event.getWhoClicked();
 
-        // Check if it's the Block Pallet Menu
         if (event.getView().getTitle().equals("Block Pallet Menu")) {
-            event.setCancelled(true); // Prevent item movement
+            event.setCancelled(true);
 
             ItemStack clickedItem = event.getCurrentItem();
             if (clickedItem == null || clickedItem.getType().isAir()) return;
 
-            // Open the corresponding submenu based on the clicked item
             switch (clickedItem.getType()) {
                 case STONE_SLAB:
-                    BlockPalletManager.openBlockPalletMenu(player, "slabs"); // Open slabs menu
+                    BlockPalletManager.openBlockPalletMenu(player, "slabs", 0);
                     break;
                 case STONE_STAIRS:
-                    BlockPalletManager.openBlockPalletMenu(player, "stairs"); // Open stairs menu
+                    BlockPalletManager.openBlockPalletMenu(player, "stairs", 0);
                     break;
                 case STONE_BRICK_WALL:
-                    BlockPalletManager.openBlockPalletMenu(player, "walls");  // Open walls menu
+                    BlockPalletManager.openBlockPalletMenu(player, "walls", 0);
+                    break;
+                case BEACON:
+                        BlockPalletManager.openBlockPalletMenu(player, "color", 0);
+                    break;
+                case OAK_LOG:
+                    BlockPalletManager.openBlockPalletMenu(player, "logs", 0);
+                    break;
+                case OAK_LEAVES:
+                    BlockPalletManager.openBlockPalletMenu(player, "leaves", 0);
+                    break;
+                case OAK_FENCE:
+                    BlockPalletManager.openBlockPalletMenu(player, "fences", 0);
+                    break;
+                case GLASS:
+                    BlockPalletManager.openBlockPalletMenu(player, "glass", 0);
+                    break;
+                case WHITE_CARPET:ARPET:
+                    BlockPalletManager.openBlockPalletMenu(player, "carpet", 0);
+                    break;
+                case TERRACOTTA:
+                    BlockPalletManager.openBlockPalletMenu(player, "terracotta", 0);
+                    break;
+                case WHITE_CONCRETE:
+                    BlockPalletManager.openBlockPalletMenu(player, "concrete", 0);
+                    break;
+                case WHITE_CONCRETE_POWDER:
+                    BlockPalletManager.openBlockPalletMenu(player, "concrete_powder", 0);
+                    break;
+                case RED_BED:
+                    BlockPalletManager.openBlockPalletMenu(player, "bed", 0);
+                    break;
+                case WHITE_CANDLE:
+                    BlockPalletManager.openBlockPalletMenu(player, "candle", 0);
+                    break;
+                case WHITE_BANNER:
+                    BlockPalletManager.openBlockPalletMenu(player, "banner", 0);
+                    break;
+                case WHITE_STAINED_GLASS_PANE:
+                    BlockPalletManager.openBlockPalletMenu(player, "glass_pane", 0);
+                    break;
+                case ARROW:
+                    if (clickedItem.getItemMeta().getDisplayName().equalsIgnoreCase("Next Page")) {
+                        BlockPalletManager.handlePageClick(player, menu.getTitle().replace(" Menu", "").toLowerCase(), true);
+                    } else if (clickedItem.getItemMeta().getDisplayName().equalsIgnoreCase("Previous Page")) {
+                        BlockPalletManager.handlePageClick(player, menu.getTitle().replace(" Menu", "").toLowerCase(), false);
+                    }
                     break;
                 default:
                     break;
             }
         }
     }
-
-
-
-
-
 }
 
 

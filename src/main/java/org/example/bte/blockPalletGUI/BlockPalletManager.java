@@ -74,20 +74,29 @@ public class BlockPalletManager {
     }
 
 
+    private static final Map<Player, Integer> playerPageMap = new HashMap<>();
+
     public static void openBlockPalletMenu(Player player) {
         Inventory menu = Bukkit.createInventory(null, 27, "Block Pallet Menu");
 
-        // Create buttons for each menu
-        ItemStack slabsButton = createMenuItem(Material.STONE_SLAB, "Slabs Menu");
-        ItemStack stairsButton = createMenuItem(Material.STONE_STAIRS, "Stairs Menu");
-        ItemStack wallsButton = createMenuItem(Material.STONE_BRICK_WALL, "Walls Menu");
+        menu.setItem(0, createMenuItem(Material.STONE_SLAB, "Slabs"));
+        menu.setItem(1, createMenuItem(Material.STONE_STAIRS, "Stairs"));
+        menu.setItem(2, createMenuItem(Material.STONE_BRICK_WALL, "Walls"));
+        menu.setItem(3, createMenuItem(Material.BEACON, "Color"));
+        menu.setItem(4, createMenuItem(Material.OAK_LOG, "Logs"));
+        menu.setItem(5, createMenuItem(Material.OAK_LEAVES, "Leaves"));
+        menu.setItem(6, createMenuItem(Material.OAK_FENCE, "Fences"));
+        menu.setItem(7, createMenuItem(Material.GLASS, "Glass"));
+        menu.setItem(8, createMenuItem(Material.WHITE_CARPET, "Carpet"));
+        menu.setItem(9, createMenuItem(Material.WHITE_WOOL, "Wool"));
+        menu.setItem(10, createMenuItem(Material.TERRACOTTA, "Terracotta"));
+        menu.setItem(11, createMenuItem(Material.WHITE_CONCRETE, "Concrete"));
+        menu.setItem(12, createMenuItem(Material.WHITE_CONCRETE_POWDER, "Concrete Powder"));
+        menu.setItem(13, createMenuItem(Material.RED_BED, "Bed"));
+        menu.setItem(14, createMenuItem(Material.WHITE_CANDLE, "Candle"));
+        menu.setItem(15, createMenuItem(Material.WHITE_BANNER, "Banner"));
+        menu.setItem(16, createMenuItem(Material.WHITE_STAINED_GLASS_PANE, "Glass Pane"));
 
-        // Place the buttons symmetrically in the inventory
-        menu.setItem(10, slabsButton); // Slot 10 for slabs
-        menu.setItem(13, stairsButton); // Slot 13 for stairs
-        menu.setItem(16, wallsButton);  // Slot 16 for walls
-
-        // Fill empty slots with light gray stained glass
         ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta fillerMeta = filler.getItemMeta();
         fillerMeta.setDisplayName(" ");
@@ -99,11 +108,10 @@ public class BlockPalletManager {
             }
         }
 
-        // Open the inventory for the player
         player.openInventory(menu);
     }
 
-    public static void openBlockPalletMenu(Player player, String menuTypeReadableName) {
+    public static void openBlockPalletMenu(Player player, String menuTypeReadableName, int page) {
         BlockPalletMenuType palletMenuType = BlockPalletMenuType.getMenuType(menuTypeReadableName);
 
         if (palletMenuType == null) {
@@ -113,14 +121,26 @@ public class BlockPalletManager {
 
         Inventory blockPalletMenu = Bukkit.createInventory(null, 27, palletMenuType.getReadableName() + " Menu");
 
-        // Get the items from the enum's item supplier
         ItemStack[] items = palletMenuType.getItemSupplier().get();
 
-        for (int i = 0; i < items.length && i < blockPalletMenu.getSize(); i++) {
-            blockPalletMenu.setItem(i, items[i]);
+        int startIndex = page * 25;
+        int endIndex = Math.min(startIndex + 25, items.length);
+
+        for (int i = startIndex, slot = 0; i < endIndex; i++, slot++) {
+            blockPalletMenu.setItem(slot, items[i]);
         }
 
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        if (page > 0) {
+            ItemStack previousPageButton = createMenuItem(Material.ARROW, "Previous Page");
+            blockPalletMenu.setItem(18, previousPageButton);
+        }
+
+        if (endIndex < items.length) {
+            ItemStack nextPageButton = createMenuItem(Material.ARROW, "Next Page");
+            blockPalletMenu.setItem(26, nextPageButton);
+        }
+
+        ItemStack filler = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         ItemMeta fillerMeta = filler.getItemMeta();
         fillerMeta.setDisplayName(" ");
         filler.setItemMeta(fillerMeta);
@@ -132,16 +152,22 @@ public class BlockPalletManager {
         }
 
         player.openInventory(blockPalletMenu);
+        playerPageMap.put(player, page);
     }
 
-
-    // Helper method to create an item representing a button
     private static ItemStack createMenuItem(Material material, String name) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public static void handlePageClick(Player player, String menuTypeReadableName, boolean isNext) {
+        int currentPage = playerPageMap.getOrDefault(player, 0);
+        int newPage = isNext ? currentPage + 1 : Math.max(0, currentPage - 1);
+
+        openBlockPalletMenu(player, menuTypeReadableName, newPage);
     }
 }
 
