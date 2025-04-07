@@ -13,9 +13,6 @@ import java.util.stream.Collectors;
 
 public class MenuItems {
 
-    // ----------------- BLOCKS BY COLOR -----------------
-    // List holding blocks organized by color using XMaterial for cross-version compatibility
-    // List holding blocks organized by color using XMaterial for cross-version compatibility
     private static final List<ItemStack> BLOCKS_BY_COLOR = Arrays.asList(
             XMaterial.CHISELED_POLISHED_BLACKSTONE.parseItem(),
             XMaterial.CRACKED_POLISHED_BLACKSTONE_BRICKS.parseItem(),
@@ -578,43 +575,32 @@ public class MenuItems {
             XMaterial.YELLOW_SHULKER_BOX.parseItem()
 
     );
-    // Method to return blocks by color as an array
+
     public static ItemStack[] getBlocksByColor() {
-        // Convert the List to an array
         return BLOCKS_BY_COLOR.toArray(new ItemStack[0]);
     }
 
-    // Method to get slabs from the list
     public static ItemStack[] getSlabs() {
-        // Filter the list to include only slabs
         List<ItemStack> slabs = BLOCKS_BY_COLOR.stream()
                 .filter(item -> item != null && item.getType().name().endsWith("_SLAB"))
                 .collect(Collectors.toList());
-
         return slabs.toArray(new ItemStack[0]);
     }
 
-    // Method to get stairs from the list
     public static ItemStack[] getStairs() {
-        // Filter the list to include only stairs
         List<ItemStack> stairs = BLOCKS_BY_COLOR.stream()
                 .filter(item -> item != null && item.getType().name().endsWith("_STAIRS"))
                 .collect(Collectors.toList());
-
         return stairs.toArray(new ItemStack[0]);
     }
 
-    // Method to get walls from the list
     public static ItemStack[] getWalls() {
-        // Filter the list to include only walls
         List<ItemStack> walls = BLOCKS_BY_COLOR.stream()
                 .filter(item -> item != null && item.getType().name().endsWith("_WALL"))
                 .collect(Collectors.toList());
-
         return walls.toArray(new ItemStack[0]);
     }
     public static ItemStack[] getLogs() {
-        // Filter the list to include only logs
         List<ItemStack> logs = BLOCKS_BY_COLOR.stream()
                 .filter(item -> item != null && (item.getType().name().endsWith("_LOG") || item.getType().name().endsWith("_WOOD")))
                 .collect(Collectors.toList());
@@ -701,7 +687,7 @@ public class MenuItems {
                 .collect(Collectors.toList())
                 .toArray(new ItemStack[0]);
     }
-    public static ItemStack[] getSignes() {
+    public static ItemStack[] getSigns() {
         return BLOCKS_BY_COLOR.stream()
                 .filter(item -> item != null && item.getType().name().endsWith("_SIGN"))
                 .collect(Collectors.toList())
@@ -718,6 +704,30 @@ public class MenuItems {
                 .filter(item -> item != null && item.getType().name().endsWith("_GATE"))
                 .collect(Collectors.toList())
                 .toArray(new ItemStack[0]);
+    }
+    public static ItemStack[] getItemsByFilter(String filter) {
+        switch (filter.toLowerCase()) {
+            case "slabs": return getSlabs();
+            case "stairs": return getStairs();
+            case "walls": return getWalls();
+            case "logs": return getLogs();
+            case "leaves": return getLeaves();
+            case "fences": return getFences();
+            case "carpet": return getCarpet();
+            case "wool": return getWool();
+            case "terracotta": return getTerracotta();
+            case "concrete": return getConcrete();
+            case "concrete_powder": return getConcretePowder();
+            case "bed": return getBeds();
+            case "candle": return getCandles();
+            case "banner": return getBanners();
+            case "glass_pane": return getGlassPanes();
+            case "signs": return getSigns();
+            case "shulker_boxes": return getShulkerBoxes();
+            case "gates": return getGates();
+            case "glass": return getGlass();
+            default: return getBlocksByColor();
+        }
     }
 
 

@@ -23,52 +23,41 @@ public class BlockPalletCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("This command can only be used by players.");
-            return true;  // Added return here after checking sender type
+            return true;
         }
-
         Player player = (Player) sender;
 
-        if (args.length > 0 && args[0].equalsIgnoreCase("menu")) {
-            BlockPalletManager.openBlockPalletMenu(player);
+        if (args.length == 0) {
+            blockPalletManager.setPlayerFiltersAndOpen(player);
             return true;
         }
 
-        if (args.length > 0) {
-            blockPalletManager.openBlockPallet(player, 0, args[0].toLowerCase());
-        } else {
-            String[] options = {
-                    "color", "slabs", "stairs", "walls", "logs", "leaves", "fences", "glass",
-                    "carpet", "wool", "terracotta", "concrete", "concrete_powder", "bed",
-                    "candle", "banner", "glass_pane", "signs", "shulker_boxes", "gates"
-            };
-
-            String optionsList = String.join(" | ", options);
-
-            String usageMessage = String.format("Usage: /blockpallet <%s>", optionsList);
-            player.sendMessage(usageMessage);
+        if (args[0].equalsIgnoreCase("menu")) {
+            blockPalletManager.setPlayerFiltersAndOpen(player);
             return true;
         }
 
-        return false;
+        if (args.length > 0 && args[0].equalsIgnoreCase("filter")) {
+            new FilterMenu(blockPalletManager).open(player);
+            return true;
+        }
 
+        blockPalletManager.setPlayerFiltersAndOpen(player, args);
+        return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         List<String> completions = new ArrayList<>();
-        List<String> options = Arrays.asList("color", "slabs", "stairs", "walls", "logs", "leaves", "fences",
+        List<String> options = Arrays.asList(
+                "color", "slabs", "stairs", "walls", "logs", "leaves", "fences",
                 "carpet", "wool", "terracotta", "concrete", "concrete_powder", "bed",
-                "candle", "banner", "glass_pane", "signs", "shulker_boxes", "gates", "glass", "menu");
-
-        // Handle completion for the first argument
-        if (args.length == 1) {
-            StringUtil.copyPartialMatches(args[0], options, completions);
+                "candle", "banner", "glass_pane", "signs", "shulker_boxes", "gates", "glass", "menu", "filter"
+        );
+        if (args.length >= 1) {
+            StringUtil.copyPartialMatches(args[args.length - 1], options, completions);
         }
-
-        // Sort results
         completions.sort(String.CASE_INSENSITIVE_ORDER);
         return completions;
     }
 }
-
-

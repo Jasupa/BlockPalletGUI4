@@ -1,53 +1,55 @@
-import org.bukkit.inventory.ItemStack;
-import org.example.bte.blockPalletGUI.MenuItems;
+package org.example.bte.blockPalletGUI;
 
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public enum BlockPalletMenuType {
-    SLABS("slabs", MenuItems::getSlabs),
-    STAIRS("stairs", MenuItems::getStairs),
-    WALLS("walls", MenuItems::getWalls),
-    COLOR("color", MenuItems::getBlocksByColor),
-    LOGS("logs", MenuItems::getLogs),
-    LEAVES("leaves", MenuItems::getLeaves),
-    FENCES("fences", MenuItems::getFences),
-    GLASS("glass", MenuItems::getGlass),
-    CARPET("carpet", MenuItems::getCarpet),
-    WOOL("wool", MenuItems::getWool),
-    TERRACOTTA("terracotta", MenuItems::getTerracotta),
-    CONCRETE("concrete", MenuItems::getConcrete),
-    CONCRETE_POWDER("concrete_powder", MenuItems::getConcretePowder),
-    BED("bed", MenuItems::getBeds),
-    CANDLE("candle", MenuItems::getCandles),
-    BANNER("banner", MenuItems::getBanners),
-    GLASS_PANE("glass_pane", MenuItems::getGlassPanes);
+    SLABS("Slabs", MenuItems::getSlabs),
+    STAIRS("Stairs", MenuItems::getStairs),
+    WALLS("Walls", MenuItems::getWalls),
+    COLOR("Color", MenuItems::getBlocksByColor),
+    LOGS("Logs", MenuItems::getLogs),
+    LEAVES("Leaves", MenuItems::getLeaves),
+    FENCES("Fences", MenuItems::getFences),
+    GLASS("Glass", MenuItems::getGlass),
+    CARPET("Carpet", MenuItems::getCarpet),
+    WOOL("Wool", MenuItems::getWool),
+    TERRACOTTA("Terracotta", MenuItems::getTerracotta),
+    CONCRETE("Concrete", MenuItems::getConcrete),
+    CONCRETE_POWDER("Concrete Powder", MenuItems::getConcretePowder),
+    BED("Bed", MenuItems::getBeds),
+    CANDLE("Candle", MenuItems::getCandles),
+    BANNER("Banner", MenuItems::getBanners),
+    GLASS_PANE("Glass Pane", MenuItems::getGlassPanes);
 
-    private final String readableName; // Declare these only once
+    private final String readableName;
     private final Supplier<ItemStack[]> itemSupplier;
 
+    private static final Map<String, BlockPalletMenuType> nameToType = new HashMap<>();
+
+    static {
+        for (BlockPalletMenuType type : values()) {
+            nameToType.put(type.getReadableName().toLowerCase(), type);
+        }
+    }
 
     BlockPalletMenuType(String readableName, Supplier<ItemStack[]> itemSupplier) {
         this.readableName = readableName;
         this.itemSupplier = itemSupplier;
     }
 
-
     public String getReadableName() {
         return readableName;
     }
-
 
     public Supplier<ItemStack[]> getItemSupplier() {
         return itemSupplier;
     }
 
-
     public static BlockPalletMenuType getMenuType(String readableName) {
-        for (BlockPalletMenuType menuType : BlockPalletMenuType.values()) {
-            if (menuType.getReadableName().equalsIgnoreCase(readableName)) {
-                return menuType;
-            }
-        }
-        return null;
+        return nameToType.get(readableName.toLowerCase());
     }
 }
