@@ -1,11 +1,13 @@
 package org.example.bte.blockPalletGUI;
 
 import com.cryptomorin.xseries.XMaterial;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.ipvp.canvas.Menu;
+import org.ipvp.canvas.mask.BinaryMask;
+import org.ipvp.canvas.mask.Mask;
+import org.ipvp.canvas.type.ChestMenu;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,12 +49,19 @@ public class FilterMenu {
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 5 * 9, "Filter Menu");
+        Menu menu = ChestMenu.builder(5)
+                .title("Filter Menu")
+                .build();
 
-        ItemStack filler = createItem(XMaterial.GRAY_STAINED_GLASS_PANE, " ");
-        for (int i = 0; i < inv.getSize(); i++) {
-            inv.setItem(i, filler);
-        }
+        Mask mask = BinaryMask.builder(menu)
+                .item(createItem(XMaterial.GRAY_STAINED_GLASS_PANE, " "))
+                .pattern("111111111")
+                .pattern("111111111")
+                .pattern("111111111")
+                .pattern("111111111")
+                .pattern("111111111")
+                .build();
+        mask.apply(menu);
 
         Set<String> currentFilters = manager.getPlayerFilters(player);
         int slot = 10;
@@ -64,7 +73,19 @@ public class FilterMenu {
             String displayName = prefix + capitalize(filterName);
             ItemStack filterItem = createItem(entry.getValue(), displayName);
 
-            inv.setItem(slot, filterItem);
+            menu.getSlot(slot).setItem(filterItem);
+
+            final String capturedFilterName = filterName;
+            menu.getSlot(slot).setClickHandler((clickPlayer, clickInfo) -> {
+                Set<String> filters = manager.getPlayerFilters(clickPlayer);
+                if (filters.contains(capturedFilterName)) {
+                    filters.remove(capturedFilterName);
+                } else {
+                    filters.add(capturedFilterName);
+                }
+                manager.updatePlayerFilters(clickPlayer, filters);
+                open(clickPlayer); // Refresh menu
+            });
 
             slot++;
             if ((slot + 1) % 9 == 0) {
@@ -74,9 +95,12 @@ public class FilterMenu {
         }
 
         ItemStack backItem = manager.createCustomHeadBase64(LEFT_ARROW, "§eBack");
-        inv.setItem(36, backItem);
+        menu.getSlot(36).setItem(backItem);
+        menu.getSlot(36).setClickHandler((p, info) -> {
+            manager.openBlockMenu(p);
+        });
 
-        player.openInventory(inv);
+        menu.open(player);
     }
 
     private ItemStack createItem(XMaterial mat, String displayName) {

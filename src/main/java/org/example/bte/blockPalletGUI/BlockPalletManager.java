@@ -4,9 +4,12 @@ import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.ipvp.canvas.Menu;
+import org.ipvp.canvas.mask.BinaryMask;
+import org.ipvp.canvas.mask.Mask;
+import org.ipvp.canvas.type.ChestMenu;
 
 import java.util.*;
 
@@ -35,53 +38,91 @@ public class BlockPalletManager {
                     "OTU2YTM2MTg0NTllNDNiMjg3YjIyYjdlMjM1ZWM2OTk1" +
                     "OTQ1NDZjNmZjZDZkYzg0YmZjYTRjZjMwYWI5MzExIn19fQ==";
 
+    private final FilterMenu filterMenu;
+
+    public BlockPalletManager() {
+        this.filterMenu = new FilterMenu(this);
+    }
+
     public void openBlockMenu(Player player) {
         List<String> filters = playerFilterMap.getOrDefault(player, Collections.singletonList("color"));
-        int page = playerPageMap.getOrDefault(player, 0);
+        final int currentPage = playerPageMap.getOrDefault(player, 0);
 
         ItemStack[] items = getItemsForFilters(filters);
-
         int totalPages = Math.max((int) Math.ceil((double) items.length / PAGE_SIZE), 1);
-        if (page >= totalPages) {
-            page = totalPages - 1;
+
+        final int page;
+        if (currentPage >= totalPages) {
+            page = Math.max(0, totalPages - 1);
+        } else {
+            page = currentPage;
         }
-        page = Math.max(page, 0);
         playerPageMap.put(player, page);
 
-        Inventory inv = Bukkit.createInventory(null, 6 * 9, "Block Pallet Menu");
+        Menu menu = ChestMenu.builder(6)
+                .title("Block Pallet Menu")
+                .build();
 
-        ItemStack filler = createMenuItem(XMaterial.GRAY_STAINED_GLASS_PANE, " ");
-        for (int i = 0; i < 9; i++) {
-            inv.setItem(i, filler);
-        }
-        for (int i = 45; i < 54; i++) {
-            inv.setItem(i, filler);
-        }
+        Mask backgroundMask = BinaryMask.builder(menu)
+                .item(createMenuItem(XMaterial.GRAY_STAINED_GLASS_PANE, " "))
+                .pattern("111111111")
+                .pattern("000000000")
+                .pattern("000000000")
+                .pattern("000000000")
+                .pattern("000000000")
+                .pattern("111111111")
+                .build();
+        backgroundMask.apply(menu);
 
         ItemStack filterMenuItem = createMenuItem(XMaterial.HOPPER, "Filter Menu");
-        inv.setItem(4, filterMenuItem);
+        menu.getSlot(4).setItem(filterMenuItem);
+        menu.getSlot(4).setClickHandler((p, info) -> {
+            filterMenu.open(p);
+        });
 
-        inv.setItem(48, createCustomHeadBase64(LEFT_ARROW, "Previous Page"));
+        ItemStack prevButton = createCustomHeadBase64(LEFT_ARROW, "Previous Page");
+        menu.getSlot(48).setItem(prevButton);
+        menu.getSlot(48).setClickHandler((p, info) -> {
+            if (page > 0) {
+                playerPageMap.put(p, page - 1);
+                openBlockMenu(p);
+            }
+        });
 
         String pageText = (page + 1) + "/" + totalPages;
-        inv.setItem(49, createCustomHeadBase64(HEAD_BETWEEN_ARROWS, pageText));
+        menu.getSlot(49).setItem(createCustomHeadBase64(HEAD_BETWEEN_ARROWS, pageText));
 
-        inv.setItem(50, createCustomHeadBase64(RIGHT_ARROW, "Next Page"));
+        ItemStack nextButton = createCustomHeadBase64(RIGHT_ARROW, "Next Page");
+        menu.getSlot(50).setItem(nextButton);
+        menu.getSlot(50).setClickHandler((p, info) -> {
+            if (page < totalPages - 1) {
+                playerPageMap.put(p, page + 1);
+                openBlockMenu(p);
+            }
+        });
 
         int startIndex = page * PAGE_SIZE;
         int endIndex = Math.min(startIndex + PAGE_SIZE, items.length);
-        int slotIndex = 9;
         for (int i = startIndex; i < endIndex; i++) {
-            inv.setItem(slotIndex++, items[i]);
+            final int slotIndex = 9 + (i - startIndex);
+            final int itemIndex = i;
+
+            if (slotIndex >= 45) break;
+
+            menu.getSlot(slotIndex).setItem(items[itemIndex]);
+            menu.getSlot(slotIndex).setClickHandler((p, info) -> {
+                p.getInventory().addItem(items[itemIndex].clone());
+            });
         }
 
-        player.openInventory(inv);
+        // Open the menu
+        menu.open(player);
     }
 
     public void handlePageClick(Player player, boolean isNext) {
         int currentPage = playerPageMap.getOrDefault(player, 0);
         currentPage += (isNext ? 1 : -1);
-        currentPage = Math.max(currentPage, 0); // don’t go negative
+        currentPage = Math.max(currentPage, 0); // don't go negative
         playerPageMap.put(player, currentPage);
         openBlockMenu(player);
     }
