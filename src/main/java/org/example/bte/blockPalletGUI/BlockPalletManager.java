@@ -38,10 +38,7 @@ public class BlockPalletManager {
                     "OTU2YTM2MTg0NTllNDNiMjg3YjIyYjdlMjM1ZWM2OTk1" +
                     "OTQ1NDZjNmZjZDZkYzg0YmZjYTRjZjMwYWI5MzExIn19fQ==";
 
-    private final FilterMenu filterMenu;
-
     public BlockPalletManager() {
-        this.filterMenu = new FilterMenu(this);
     }
 
     public void openBlockMenu(Player player) {
@@ -76,9 +73,7 @@ public class BlockPalletManager {
 
         ItemStack filterMenuItem = createMenuItem(XMaterial.HOPPER, "Filter Menu");
         menu.getSlot(4).setItem(filterMenuItem);
-        menu.getSlot(4).setClickHandler((p, info) -> {
-            filterMenu.open(p);
-        });
+        menu.getSlot(4).setClickHandler((p, info) -> new FilterMenu(this, p).open());
 
         ItemStack prevButton = createCustomHeadBase64(LEFT_ARROW, "Previous Page");
         menu.getSlot(48).setItem(prevButton);
@@ -105,24 +100,20 @@ public class BlockPalletManager {
         int endIndex = Math.min(startIndex + PAGE_SIZE, items.length);
         for (int i = startIndex; i < endIndex; i++) {
             final int slotIndex = 9 + (i - startIndex);
+            if (slotIndex >= 45)
+                break;
             final int itemIndex = i;
-
-            if (slotIndex >= 45) break;
-
             menu.getSlot(slotIndex).setItem(items[itemIndex]);
-            menu.getSlot(slotIndex).setClickHandler((p, info) -> {
-                p.getInventory().addItem(items[itemIndex].clone());
-            });
+            menu.getSlot(slotIndex).setClickHandler((p, info) -> p.getInventory().addItem(items[itemIndex].clone()));
         }
 
-        // Open the menu
         menu.open(player);
     }
 
     public void handlePageClick(Player player, boolean isNext) {
         int currentPage = playerPageMap.getOrDefault(player, 0);
         currentPage += (isNext ? 1 : -1);
-        currentPage = Math.max(currentPage, 0); // don't go negative
+        currentPage = Math.max(currentPage, 0);
         playerPageMap.put(player, currentPage);
         openBlockMenu(player);
     }
@@ -154,7 +145,7 @@ public class BlockPalletManager {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         skull = Bukkit.getUnsafe().modifyItemStack(
                 skull,
-                "{SkullOwner:{Id:\""+UUID.randomUUID()+"\",Properties:{textures:[{Value:\""+base64+"\"}]}}}"
+                "{SkullOwner:{Id:\"" + UUID.randomUUID() + "\",Properties:{textures:[{Value:\"" + base64 + "\"}]}}}"
         );
         ItemMeta meta = skull.getItemMeta();
         if (meta != null) {
@@ -167,6 +158,8 @@ public class BlockPalletManager {
     private ItemStack[] getItemsForFilters(List<String> filters) {
         List<ItemStack> combined = new ArrayList<>();
         for (String filter : filters) {
+            // MenuItems.getItemsByFilter(filter) should return an array of items for the given filter.
+            // Ensure that you have this utility or adjust this method accordingly.
             ItemStack[] arr = MenuItems.getItemsByFilter(filter);
             combined.addAll(Arrays.asList(arr));
         }

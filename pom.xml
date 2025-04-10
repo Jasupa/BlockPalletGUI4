@@ -58,8 +58,6 @@
             <scope>compile</scope>
         </dependency>
 
-
-
     </dependencies>
 
     <build>
@@ -134,13 +132,5 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-
-        <!-- BuildTheEarth -->
-        <repository>
-            <id>reposilite-repository-releases</id>
-            <name>BuildTheEarth</name>
-            <url>https://maven.buildtheearth.net/releases</url>
-        </repository>
-
     </repositories>
 </project>

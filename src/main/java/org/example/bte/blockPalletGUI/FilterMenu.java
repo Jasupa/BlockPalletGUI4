@@ -3,27 +3,25 @@ package org.example.bte.blockPalletGUI;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.mask.BinaryMask;
 import org.ipvp.canvas.mask.Mask;
-import org.ipvp.canvas.type.ChestMenu;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class FilterMenu {
+public class FilterMenu extends AbstractMenu {
 
     private final BlockPalletManager manager;
 
-    private Menu menu;
-
+    // Base64 string for the left arrow head texture
     private static final String LEFT_ARROW =
-            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90" +
-                    "ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0" +
-                    "ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYx" +
-                    "YzQyMzYyMTQyYmFlMWVkZDUifX19";
+            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90"
+                    + "ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0"
+                    + "ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYx"
+                    + "YzQyMzYyMTQyYmFlMWVkZDUifX19";
 
+    // Define the filters and their corresponding XMaterial values
     private static final LinkedHashMap<String, XMaterial> FILTERS = new LinkedHashMap<String, XMaterial>() {{
         put("slabs",            XMaterial.OAK_SLAB);
         put("stairs",           XMaterial.OAK_STAIRS);
@@ -46,57 +44,67 @@ public class FilterMenu {
         put("glass",            XMaterial.GLASS);
     }};
 
-    public FilterMenu(BlockPalletManager manager) {
+    /**
+     * Constructs the FilterMenu for the given manager and player.
+     *
+     * @param manager the BlockPalletManager instance
+     * @param player  the player for whom the menu is created
+     */
+    public FilterMenu(BlockPalletManager manager, Player player) {
+        super(5, "Filter Menu", player);
         this.manager = manager;
     }
 
-    public void open(Player player) {
-        initMenu();
-        addMenuItems(player);
-        menu.open(player);
-    }
-
-    private void initMenu() {
-        menu = ChestMenu.builder(5)
-                .title("Filter Menu")
-                .build();
-
-        Mask mask = BinaryMask.builder(menu)
-                .item(Item.create(XMaterial.GRAY_STAINED_GLASS_PANE)
-                        .setName(" ")
-                        .build())
+    /**
+     * Creates the background mask for the menu.
+     * Uses a glass pane as the filler item.
+     *
+     * @return the Mask instance to be applied before the menu is opened
+     */
+    @Override
+    protected Mask getMask() {
+        // Use the Item class to create the filler ItemStack
+        ItemStack maskItem = Item.create(XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial(), " ");
+        Mask mask = BinaryMask.builder(getMenu())
+                .item(maskItem)
                 .pattern("111111111")
                 .pattern("111111111")
                 .pattern("111111111")
                 .pattern("111111111")
                 .pattern("111111111")
                 .build();
-        mask.apply(menu);
+        return mask;
     }
 
-    private void addMenuItems(Player player) {
-        addFilterButtons(player);
-        addNavigationButtons();
-    }
-
-    private void addFilterButtons(Player player) {
-        Set<String> currentFilters = manager.getPlayerFilters(player);
+    /**
+     * Asynchronously sets the menu items.
+     * Populates the filter items and assigns click handlers.
+     */
+    @Override
+    protected void setMenuItemsAsync() {
+        Set<String> currentFilters = manager.getPlayerFilters(getMenuPlayer());
         int slot = 10;
-
         for (Map.Entry<String, XMaterial> entry : FILTERS.entrySet()) {
             String filterName = entry.getKey();
             boolean active = currentFilters.contains(filterName);
-
             String prefix = active ? "§a✔ " : "§c✘ ";
             String displayName = prefix + capitalize(filterName);
+            // Use the Item class static method to create the item
+            ItemStack filterItem = Item.create(entry.getValue().parseMaterial(), displayName);
+            getMenu().getSlot(slot).setItem(filterItem);
 
-            ItemStack filterItem = Item.create(entry.getValue())
-                    .setName(displayName)
-                    .build();
-
-            menu.getSlot(slot).setItem(filterItem);
-
-            addFilterClickHandler(slot, filterName);
+            final String capturedFilterName = filterName;
+            getMenu().getSlot(slot).setClickHandler((clickPlayer, clickInfo) -> {
+                Set<String> filters = manager.getPlayerFilters(clickPlayer);
+                if (filters.contains(capturedFilterName)) {
+                    filters.remove(capturedFilterName);
+                } else {
+                    filters.add(capturedFilterName);
+                }
+                manager.updatePlayerFilters(clickPlayer, filters);
+                // Refresh the menu by opening a new instance
+                new FilterMenu(manager, clickPlayer).open();
+            });
 
             slot++;
             if ((slot + 1) % 9 == 0) {
@@ -104,39 +112,43 @@ public class FilterMenu {
             }
             if (slot >= 36) break;
         }
-    }
-
-    private void addFilterClickHandler(int slot, String filterName) {
-        menu.getSlot(slot).setClickHandler((player, info) -> {
-            Set<String> filters = manager.getPlayerFilters(player);
-            if (filters.contains(filterName)) {
-                filters.remove(filterName);
-            } else {
-                filters.add(filterName);
-            }
-
-            manager.updatePlayerFilters(player, filters);
-            open(player);
-        });
-    }
-
-    private void addNavigationButtons() {
+        // Add the back button at slot 36
         ItemStack backItem = manager.createCustomHeadBase64(LEFT_ARROW, "§eBack");
-        menu.getSlot(36).setItem(backItem);
-        menu.getSlot(36).setClickHandler((player, info) -> manager.openBlockMenu(player));
+        getMenu().getSlot(36).setItem(backItem);
+        getMenu().getSlot(36).setClickHandler((p, info) -> manager.openBlockMenu(p));
     }
 
+    /**
+     * Sets additional click event handlers asynchronously.
+     * (This implementation already sets click handlers within setMenuItemsAsync, so this method is empty.)
+     */
+    @Override
+    protected void setItemClickEventsAsync() {
+        // No additional click events to set.
+    }
+
+    /**
+     * Utility method to capitalize filter names.
+     *
+     * @param input the filter name
+     * @return the capitalized string
+     */
     private String capitalize(String input) {
         input = input.replace("_", " ");
         String[] parts = input.split(" ");
         StringBuilder sb = new StringBuilder();
-
         for (String part : parts) {
             sb.append(Character.toUpperCase(part.charAt(0)))
                     .append(part.substring(1).toLowerCase())
                     .append(" ");
         }
-
         return sb.toString().trim();
+    }
+
+    /**
+     * Opens the FilterMenu for the player.
+     */
+    public void open() {
+        getMenu().open(getMenuPlayer());
     }
 }

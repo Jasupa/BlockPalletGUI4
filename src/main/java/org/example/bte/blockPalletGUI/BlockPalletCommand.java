@@ -38,7 +38,7 @@ public class BlockPalletCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length > 0 && args[0].equalsIgnoreCase("filter")) {
-            new FilterMenu(blockPalletManager).open(player);
+            new FilterMenu(blockPalletManager, player).open();
             return true;
         }
 

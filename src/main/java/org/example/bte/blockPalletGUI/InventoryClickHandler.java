@@ -52,7 +52,7 @@ public class InventoryClickHandler implements Listener {
                     blockPalletManager.handlePageClick(player, true);
                     break;
                 case "Filter Menu":
-                    new FilterMenu(blockPalletManager).open(player);
+                    new FilterMenu(blockPalletManager, player).open();
                     break;
                 default:
                     break;
@@ -87,7 +87,7 @@ public class InventoryClickHandler implements Listener {
                 }
                 blockPalletManager.updatePlayerFilters(player, filters);
 
-                new FilterMenu(blockPalletManager).open(player);
+                new FilterMenu(blockPalletManager, player).open();
             }
         }
     }
