@@ -3,7 +3,6 @@ package org.example.bte.blockPalletGUI;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.mask.BinaryMask;
 import org.ipvp.canvas.mask.Mask;
@@ -14,7 +13,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class FilterMenu {
+
     private final BlockPalletManager manager;
+
+    private Menu menu;
 
     private static final String LEFT_ARROW =
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90" +
@@ -49,12 +51,20 @@ public class FilterMenu {
     }
 
     public void open(Player player) {
-        Menu menu = ChestMenu.builder(5)
+        initMenu();
+        addMenuItems(player);
+        menu.open(player);
+    }
+
+    private void initMenu() {
+        menu = ChestMenu.builder(5)
                 .title("Filter Menu")
                 .build();
 
         Mask mask = BinaryMask.builder(menu)
-                .item(createItem(XMaterial.GRAY_STAINED_GLASS_PANE, " "))
+                .item(Item.create(XMaterial.GRAY_STAINED_GLASS_PANE)
+                        .setName(" ")
+                        .build())
                 .pattern("111111111")
                 .pattern("111111111")
                 .pattern("111111111")
@@ -62,30 +72,31 @@ public class FilterMenu {
                 .pattern("111111111")
                 .build();
         mask.apply(menu);
+    }
 
+    private void addMenuItems(Player player) {
+        addFilterButtons(player);
+        addNavigationButtons();
+    }
+
+    private void addFilterButtons(Player player) {
         Set<String> currentFilters = manager.getPlayerFilters(player);
         int slot = 10;
+
         for (Map.Entry<String, XMaterial> entry : FILTERS.entrySet()) {
             String filterName = entry.getKey();
             boolean active = currentFilters.contains(filterName);
 
             String prefix = active ? "§a✔ " : "§c✘ ";
             String displayName = prefix + capitalize(filterName);
-            ItemStack filterItem = createItem(entry.getValue(), displayName);
+
+            ItemStack filterItem = Item.create(entry.getValue())
+                    .setName(displayName)
+                    .build();
 
             menu.getSlot(slot).setItem(filterItem);
 
-            final String capturedFilterName = filterName;
-            menu.getSlot(slot).setClickHandler((clickPlayer, clickInfo) -> {
-                Set<String> filters = manager.getPlayerFilters(clickPlayer);
-                if (filters.contains(capturedFilterName)) {
-                    filters.remove(capturedFilterName);
-                } else {
-                    filters.add(capturedFilterName);
-                }
-                manager.updatePlayerFilters(clickPlayer, filters);
-                open(clickPlayer); // Refresh menu
-            });
+            addFilterClickHandler(slot, filterName);
 
             slot++;
             if ((slot + 1) % 9 == 0) {
@@ -93,38 +104,39 @@ public class FilterMenu {
             }
             if (slot >= 36) break;
         }
-
-        ItemStack backItem = manager.createCustomHeadBase64(LEFT_ARROW, "§eBack");
-        menu.getSlot(36).setItem(backItem);
-        menu.getSlot(36).setClickHandler((p, info) -> {
-            manager.openBlockMenu(p);
-        });
-
-        menu.open(player);
     }
 
-    private ItemStack createItem(XMaterial mat, String displayName) {
-        ItemStack item = mat.parseItem();
-        if (item == null) {
-            item = new ItemStack(XMaterial.BARRIER.parseMaterial());
-        }
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(displayName);
-            item.setItemMeta(meta);
-        }
-        return item;
+    private void addFilterClickHandler(int slot, String filterName) {
+        menu.getSlot(slot).setClickHandler((player, info) -> {
+            Set<String> filters = manager.getPlayerFilters(player);
+            if (filters.contains(filterName)) {
+                filters.remove(filterName);
+            } else {
+                filters.add(filterName);
+            }
+
+            manager.updatePlayerFilters(player, filters);
+            open(player);
+        });
+    }
+
+    private void addNavigationButtons() {
+        ItemStack backItem = manager.createCustomHeadBase64(LEFT_ARROW, "§eBack");
+        menu.getSlot(36).setItem(backItem);
+        menu.getSlot(36).setClickHandler((player, info) -> manager.openBlockMenu(player));
     }
 
     private String capitalize(String input) {
         input = input.replace("_", " ");
         String[] parts = input.split(" ");
         StringBuilder sb = new StringBuilder();
+
         for (String part : parts) {
             sb.append(Character.toUpperCase(part.charAt(0)))
                     .append(part.substring(1).toLowerCase())
                     .append(" ");
         }
+
         return sb.toString().trim();
     }
 }
