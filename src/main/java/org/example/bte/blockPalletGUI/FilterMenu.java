@@ -8,8 +8,12 @@ import org.ipvp.canvas.mask.Mask;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * Menu for toggling filters on and off.
+ */
 public class FilterMenu extends AbstractMenu {
 
     private final BlockPalletManager manager;
@@ -44,6 +48,11 @@ public class FilterMenu extends AbstractMenu {
         put("glass",            XMaterial.GLASS);
     }};
 
+    // Where we store slot -> filterName, so we can handle clicks separately
+    private final Map<Integer, String> slotToFilterMap = new HashMap<>();
+
+    private static final int BACK_SLOT = 36;
+
     /**
      * Constructs the FilterMenu for the given manager and player.
      *
@@ -65,7 +74,7 @@ public class FilterMenu extends AbstractMenu {
     protected Mask getMask() {
         // Use the Item class to create the filler ItemStack
         ItemStack maskItem = Item.create(XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial(), " ");
-        Mask mask = BinaryMask.builder(getMenu())
+        return BinaryMask.builder(getMenu())
                 .item(maskItem)
                 .pattern("111111111")
                 .pattern("111111111")
@@ -73,38 +82,28 @@ public class FilterMenu extends AbstractMenu {
                 .pattern("111111111")
                 .pattern("111111111")
                 .build();
-        return mask;
     }
 
     /**
-     * Asynchronously sets the menu items.
-     * Populates the filter items and assigns click handlers.
+     * Asynchronously sets the menu items (no click handlers here).
      */
     @Override
     protected void setMenuItemsAsync() {
         Set<String> currentFilters = manager.getPlayerFilters(getMenuPlayer());
         int slot = 10;
+
+        // Create each filter item in the menu
         for (Map.Entry<String, XMaterial> entry : FILTERS.entrySet()) {
             String filterName = entry.getKey();
             boolean active = currentFilters.contains(filterName);
             String prefix = active ? "§a✔ " : "§c✘ ";
             String displayName = prefix + capitalize(filterName);
-            // Use the Item class static method to create the item
+
             ItemStack filterItem = Item.create(entry.getValue().parseMaterial(), displayName);
             getMenu().getSlot(slot).setItem(filterItem);
 
-            final String capturedFilterName = filterName;
-            getMenu().getSlot(slot).setClickHandler((clickPlayer, clickInfo) -> {
-                Set<String> filters = manager.getPlayerFilters(clickPlayer);
-                if (filters.contains(capturedFilterName)) {
-                    filters.remove(capturedFilterName);
-                } else {
-                    filters.add(capturedFilterName);
-                }
-                manager.updatePlayerFilters(clickPlayer, filters);
-                // Refresh the menu by opening a new instance
-                new FilterMenu(manager, clickPlayer).open();
-            });
+            // Store the slot so we know which filter is placed here
+            slotToFilterMap.put(slot, filterName);
 
             slot++;
             if ((slot + 1) % 9 == 0) {
@@ -112,19 +111,39 @@ public class FilterMenu extends AbstractMenu {
             }
             if (slot >= 36) break;
         }
-        // Add the back button at slot 36
+
+        // Add the back button at slot 36 (we'll handle click later)
         ItemStack backItem = manager.createCustomHeadBase64(LEFT_ARROW, "§eBack");
-        getMenu().getSlot(36).setItem(backItem);
-        getMenu().getSlot(36).setClickHandler((p, info) -> manager.openBlockMenu(p));
+        getMenu().getSlot(BACK_SLOT).setItem(backItem);
     }
 
     /**
-     * Sets additional click event handlers asynchronously.
-     * (This implementation already sets click handlers within setMenuItemsAsync, so this method is empty.)
+     * Sets click event handlers for the items.
      */
     @Override
     protected void setItemClickEventsAsync() {
-        // No additional click events to set.
+        // Handle filter toggling
+        for (Map.Entry<Integer, String> entry : slotToFilterMap.entrySet()) {
+            int slot = entry.getKey();
+            String filterName = entry.getValue();
+
+            getMenu().getSlot(slot).setClickHandler((clickPlayer, clickInfo) -> {
+                Set<String> filters = manager.getPlayerFilters(clickPlayer);
+                // Toggle the filter
+                if (filters.contains(filterName)) {
+                    filters.remove(filterName);
+                } else {
+                    filters.add(filterName);
+                }
+                manager.updatePlayerFilters(clickPlayer, filters);
+
+                // Refresh the menu by opening a new instance
+                new FilterMenu(manager, clickPlayer).open();
+            });
+        }
+
+        // Handle "back" button at BACK_SLOT
+        getMenu().getSlot(BACK_SLOT).setClickHandler((p, info) -> manager.openBlockMenu(p));
     }
 
     /**
