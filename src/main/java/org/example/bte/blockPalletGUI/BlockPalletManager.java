@@ -16,8 +16,8 @@ import java.util.*;
 public class BlockPalletManager {
     private static final int PAGE_SIZE = 36;
 
-    private final Map<Player, List<String>> playerFilterMap = new HashMap<>();
-    private final Map<Player, Integer> playerPageMap = new HashMap<>();
+    private final Map<UUID, List<String>> playerFilterMap = new HashMap<>();
+    private final Map<UUID, Integer> playerPageMap = new HashMap<>();
 
     private static final String HEAD_BETWEEN_ARROWS =
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6" +
@@ -42,8 +42,8 @@ public class BlockPalletManager {
     }
 
     public void openBlockMenu(Player player) {
-        List<String> filters = playerFilterMap.getOrDefault(player, Collections.singletonList("color"));
-        final int currentPage = playerPageMap.getOrDefault(player, 0);
+        List<String> filters = playerFilterMap.getOrDefault(player.getUniqueId(), Collections.singletonList("color"));
+        final int currentPage = playerPageMap.getOrDefault(player.getUniqueId(), 0);
 
         ItemStack[] items = getItemsForFilters(filters);
         int totalPages = Math.max((int) Math.ceil((double) items.length / PAGE_SIZE), 1);
@@ -54,7 +54,7 @@ public class BlockPalletManager {
         } else {
             page = currentPage;
         }
-        playerPageMap.put(player, page);
+        playerPageMap.put(player.getUniqueId(), page);
 
         Menu menu = ChestMenu.builder(6)
                 .title("Block Pallet Menu")
@@ -79,7 +79,7 @@ public class BlockPalletManager {
         menu.getSlot(48).setItem(prevButton);
         menu.getSlot(48).setClickHandler((p, info) -> {
             if (page > 0) {
-                playerPageMap.put(p, page - 1);
+                playerPageMap.put(p.getUniqueId(), page - 1);
                 openBlockMenu(p);
             }
         });
@@ -91,7 +91,7 @@ public class BlockPalletManager {
         menu.getSlot(50).setItem(nextButton);
         menu.getSlot(50).setClickHandler((p, info) -> {
             if (page < totalPages - 1) {
-                playerPageMap.put(p, page + 1);
+                playerPageMap.put(p.getUniqueId(), page + 1);
                 openBlockMenu(p);
             }
         });
@@ -111,20 +111,20 @@ public class BlockPalletManager {
     }
 
     public void handlePageClick(Player player, boolean isNext) {
-        int currentPage = playerPageMap.getOrDefault(player, 0);
+        int currentPage = playerPageMap.getOrDefault(player.getUniqueId(), 0);
         currentPage += (isNext ? 1 : -1);
         currentPage = Math.max(currentPage, 0);
-        playerPageMap.put(player, currentPage);
+        playerPageMap.put(player.getUniqueId(), currentPage);
         openBlockMenu(player);
     }
 
     public void setPlayerFiltersAndOpen(Player player, String... filters) {
         if (filters == null || filters.length == 0) {
-            playerFilterMap.put(player, Collections.singletonList("color"));
+            playerFilterMap.put(player.getUniqueId(), Collections.singletonList("color"));
         } else {
-            playerFilterMap.put(player, Arrays.asList(filters));
+            playerFilterMap.put(player.getUniqueId(), Arrays.asList(filters));
         }
-        playerPageMap.put(player, 0);
+        playerPageMap.put(player.getUniqueId(), 0);
         openBlockMenu(player);
     }
 
@@ -158,8 +158,6 @@ public class BlockPalletManager {
     private ItemStack[] getItemsForFilters(List<String> filters) {
         List<ItemStack> combined = new ArrayList<>();
         for (String filter : filters) {
-            // MenuItems.getItemsByFilter(filter) should return an array of items for the given filter.
-            // Ensure that you have this utility or adjust this method accordingly.
             ItemStack[] arr = MenuItems.getItemsByFilter(filter);
             combined.addAll(Arrays.asList(arr));
         }
@@ -167,10 +165,10 @@ public class BlockPalletManager {
     }
 
     public Set<String> getPlayerFilters(Player player) {
-        return new HashSet<>(playerFilterMap.getOrDefault(player, Collections.emptyList()));
+        return new HashSet<>(playerFilterMap.getOrDefault(player.getUniqueId(), Collections.emptyList()));
     }
 
     public void updatePlayerFilters(Player player, Set<String> filters) {
-        playerFilterMap.put(player, new ArrayList<>(filters));
+        playerFilterMap.put(player.getUniqueId(), new ArrayList<>(filters));
     }
 }

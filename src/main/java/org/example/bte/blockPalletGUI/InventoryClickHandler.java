@@ -74,6 +74,7 @@ public class InventoryClickHandler implements Listener {
             boolean startsCheck = displayName.startsWith("§a✔ ");
             boolean startsCross = displayName.startsWith("§c✘ ");
             if (startsCheck || startsCross) {
+                // Normaliseer de filternaam, zodat "Concrete Powder" wordt "concrete_powder", etc.
                 String filterName = displayName.substring(4).toLowerCase().replace(" ", "_");
                 Set<String> filters = blockPalletManager.getPlayerFilters(player);
 
