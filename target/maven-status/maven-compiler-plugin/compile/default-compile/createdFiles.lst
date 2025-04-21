@@ -1,9 +1,1 @@
-org\example\bte\blockPalletGUI\BlockPalletCommand.class
-org\example\bte\blockPalletGUI\BlockPalletManager.class
-org\example\bte\blockPalletGUI\FilterMenu.class
-org\example\bte\blockPalletGUI\Main.class
-org\example\bte\blockPalletGUI\Item.class
-org\example\bte\blockPalletGUI\AbstractMenu.class
-org\example\bte\blockPalletGUI\FilterMenu$1.class
 org\example\bte\blockPalletGUI\BlockPalletMenuType.class
-org\example\bte\blockPalletGUI\InventoryClickHandler.class
