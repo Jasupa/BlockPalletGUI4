@@ -1,24 +1,30 @@
+// src/main/java/org/example/bte/blockPalletGUI/Main.java
 package org.example.bte.blockPalletGUI;
 
 import org.bukkit.plugin.java.JavaPlugin;
+// import Canvas’s listener
+import org.ipvp.canvas.MenuFunctionListener;
 
 public final class Main extends JavaPlugin {
 
-    // Singleton instance variable
     private static Main instance;
     private BlockPalletManager blockPalletManager;
 
     @Override
     public void onEnable() {
-        // Initialize the instance to this object
         instance = this;
-
         getLogger().info("Plugin is enabled and registering commands.");
 
         this.blockPalletManager = new BlockPalletManager();
 
         registerCommands();
-        registerListeners();
+
+        // Register Canvas’s MenuFunctionListener so all of your
+        // slot click handlers actually fire in-game
+        getServer().getPluginManager().registerEvents(
+                new MenuFunctionListener(),
+                this
+        );
     }
 
     public static Main getInstance() {
@@ -26,10 +32,8 @@ public final class Main extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("blockpallet").setExecutor(new BlockPalletCommand(blockPalletManager));
-    }
-
-    private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new InventoryClickHandler(blockPalletManager), this);
+        getCommand("blockpallet").setExecutor(
+                new BlockPalletCommand(blockPalletManager)
+        );
     }
 }

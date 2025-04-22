@@ -1,79 +1,110 @@
+// BlockListMenu.java
 package org.example.bte.blockPalletGUI;
 
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.mask.BinaryMask;
 import org.ipvp.canvas.mask.Mask;
-import java.util.ArrayList;
+import org.ipvp.canvas.type.ChestMenu;
+
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * A menu that allows the player to select a block from a list of blocks. It is possible to switch pages and to proceed to the next menu once a block has been selected. It is also possible to select multiple blocks.
- * To change the items that are displayed in the menu, override the {@link #getSource()} method.
- * To perform an action when a block is selected, override the {@link #setItemClickEventsAsync()} method.
+ * Encapsulates everything that was in openBlockMenu(...) so
+ * BlockPalletManager is just a thin delegate.
  */
-public abstract class BlockListMenu extends AbstractPaginatedMenu {
+public class BlockListMenu {
 
-    public static final int SWITCH_PAGE_ITEM_SLOT = 31;
-    public static final int NEXT_ITEM_SLOT = 35;
-    public static final int BACK_ITEM_SLOT = 27;
+    public static void open(BlockPalletManager manager, Player player) {
+        // fetch filters & page
+        List<String> filters = manager.getFilters(player);
+        if (filters.isEmpty()) {
+            filters = Collections.singletonList("color");
+        }
+        int currentPage = manager.getPlayerPage(player);
 
-    public ArrayList<String> selectedMaterials;
-    private final List<ItemStack> items;
+        // build items & compute total pages
+        ItemStack[] items = manager.getItemsForFilters(filters);
+        int totalPages = Math.max(
+                (int)Math.ceil((double) items.length / BlockPalletManager.PAGE_SIZE),
+                1
+        );
 
-    private final AbstractMenu backMenu;
+        int page = (currentPage >= totalPages)
+                ? Math.max(0, totalPages - 1)
+                : currentPage;
+        manager.setPlayerPage(player, page);
 
-
-    public BlockListMenu(Player player, String invName, List<ItemStack> items, AbstractMenu backMenu, boolean autoLoad) {
-        super(4, 3, invName, player, autoLoad);
-
-        this.items = items;
-        this.backMenu = backMenu;
-    }
-
-
-
-    @Override
-    protected void setMenuItemsAsync() {}
-
-    @Override
-    protected void setItemClickEventsAsync() {
-        setSwitchPageItemClickEvents(SWITCH_PAGE_ITEM_SLOT);
-    }
-
-    @Override
-    protected Mask getMask() {
-        String backSlot = backMenu == null ? "1" : "0";
-        ItemStack maskItem = Item.create(XMaterial.GRAY_STAINED_GLASS_PANE.parseMaterial(), " ");
-
-        return BinaryMask.builder(getMenu())
-                .item(maskItem)
-                .pattern("000000000")
-                .pattern("000000000")
-                .pattern("000000000")
-                .pattern(backSlot + "11000110")
+        // create the menu
+        Menu menu = ChestMenu.builder(6)
+                .title("Block Pallet Menu")
                 .build();
-    }
 
-    @Override
-    protected List<?> getSource() {
-        return items;
-    }
+        // background border
+        Mask backgroundMask = BinaryMask.builder(menu)
+                .item(manager.createMenuItem(XMaterial.GRAY_STAINED_GLASS_PANE, " "))
+                .pattern("111111111")
+                .pattern("000000000")
+                .pattern("000000000")
+                .pattern("000000000")
+                .pattern("000000000")
+                .pattern("111111111")
+                .build();
+        backgroundMask.apply(menu);
 
+        // filter button
+        ItemStack filterMenuItem = manager.createMenuItem(XMaterial.HOPPER, "Filter Menu");
+        menu.getSlot(4).setItem(filterMenuItem);
+        menu.getSlot(4).setClickHandler((p, info) ->
+                new FilterMenu(manager, p).open()
+        );
 
-    @Override
-    protected void setPaginatedMenuItemsAsync(List<?> source) {
-    }
+        // previous page arrow
+        ItemStack prevButton =
+                manager.createCustomHeadBase64(BlockPalletManager.LEFT_ARROW, "Previous Page");
+        menu.getSlot(48).setItem(prevButton);
+        menu.getSlot(48).setClickHandler((p, info) -> {
+            if (page > 0) {
+                manager.setPlayerPage(p, page - 1);
+                manager.openBlockMenu(p);
+            }
+        });
 
+        // page indicator
+        String pageText = (page + 1) + "/" + totalPages;
+        menu.getSlot(49).setItem(
+                manager.createCustomHeadBase64(BlockPalletManager.HEAD_BETWEEN_ARROWS, pageText)
+        );
 
-    /**
-     * Checks if the player has selected at least one block.
-     *
-     * @return true if the player has selected at least one block, false otherwise.
-     */
-    protected boolean canProceed(){
-        return !selectedMaterials.isEmpty();
+        // next page arrow
+        ItemStack nextButton =
+                manager.createCustomHeadBase64(BlockPalletManager.RIGHT_ARROW, "Next Page");
+        menu.getSlot(50).setItem(nextButton);
+        menu.getSlot(50).setClickHandler((p, info) -> {
+            if (page < totalPages - 1) {
+                manager.setPlayerPage(p, page + 1);
+                manager.openBlockMenu(p);
+            }
+        });
+
+        // fill block slots 9–44
+        int startIndex = page * BlockPalletManager.PAGE_SIZE;
+        int endIndex   = Math.min(startIndex + BlockPalletManager.PAGE_SIZE, items.length);
+        for (int i = startIndex; i < endIndex; i++) {
+            int slotIndex = 9 + (i - startIndex);
+            if (slotIndex >= 45) break;
+            final ItemStack item = items[i];
+            menu.getSlot(slotIndex).setItem(item);
+            menu.getSlot(slotIndex).setClickHandler((p, info) ->
+                    p.getInventory().addItem(item.clone())
+            );
+        }
+
+        // open it up
+        menu.open(player);
     }
 }

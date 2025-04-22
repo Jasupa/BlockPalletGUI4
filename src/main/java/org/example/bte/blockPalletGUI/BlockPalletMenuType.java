@@ -1,10 +1,13 @@
+// src/main/java/org/example/bte/blockPalletGUI/BlockPalletMenuType.java
 package org.example.bte.blockPalletGUI;
 
 import org.bukkit.inventory.ItemStack;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 
 public enum BlockPalletMenuType {
     SLABS("Slabs", MenuItems::getSlabs),
@@ -35,6 +38,17 @@ public enum BlockPalletMenuType {
             nameToType.put(type.getReadableName().toLowerCase(), type);
         }
     }
+
+    /**
+     * Complete list of all supported filter keys (for tab completion).
+     */
+    public static final List<String> FILTER_OPTIONS =
+            Collections.unmodifiableList(Arrays.asList(
+                    "color", "slabs", "stairs", "walls", "logs", "leaves", "fences",
+                    "carpet", "wool", "terracotta", "concrete", "concrete_powder",
+                    "bed", "candle", "banner", "glass_pane", "signs", "shulker_boxes",
+                    "gates", "glass"
+            ));
 
     BlockPalletMenuType(String readableName, Supplier<ItemStack[]> itemSupplier) {
         this.readableName = readableName;
