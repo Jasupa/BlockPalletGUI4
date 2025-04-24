@@ -1,4 +1,3 @@
-// src/main/java/org/example/bte/blockPalletGUI/BlockPalletMenuType.java
 package org.example.bte.blockPalletGUI;
 
 import org.bukkit.inventory.ItemStack;
@@ -8,34 +7,35 @@ import java.util.function.Supplier;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public enum BlockPalletMenuType {
-    SLABS("Slabs", MenuItems::getSlabs),
-    STAIRS("Stairs", MenuItems::getStairs),
-    WALLS("Walls", MenuItems::getWalls),
-    COLOR("Color", MenuItems::getBlocksByColor),
-    LOGS("Logs", MenuItems::getLogs),
-    LEAVES("Leaves", MenuItems::getLeaves),
-    FENCES("Fences", MenuItems::getFences),
-    GLASS("Glass", MenuItems::getGlass),
-    CARPET("Carpet", MenuItems::getCarpet),
-    WOOL("Wool", MenuItems::getWool),
-    TERRACOTTA("Terracotta", MenuItems::getTerracotta),
-    CONCRETE("Concrete", MenuItems::getConcrete),
-    CONCRETE_POWDER("Concrete Powder", MenuItems::getConcretePowder),
-    BED("Bed", MenuItems::getBeds),
-    CANDLE("Candle", MenuItems::getCandles),
-    BANNER("Banner", MenuItems::getBanners),
-    GLASS_PANE("Glass Pane", MenuItems::getGlassPanes);
+    SLABS("Slabs", "slabs", MenuItems::getSlabs),
+    STAIRS("Stairs", "stairs", MenuItems::getStairs),
+    WALLS("Walls", "walls", MenuItems::getWalls),
+    COLOR("Color", "color", MenuItems::getBlocksByColor),
+    LOGS("Logs", "logs", MenuItems::getLogs),
+    LEAVES("Leaves", "leaves", MenuItems::getLeaves),
+    FENCES("Fences", "fences", MenuItems::getFences),
+    CARPET("Carpet", "carpet", MenuItems::getCarpet),
+    WOOL("Wool", "wool", MenuItems::getWool),
+    TERRACOTTA("Terracotta", "terracotta", MenuItems::getTerracotta),
+    CONCRETE("Concrete", "concrete", MenuItems::getConcrete),
+    CONCRETE_POWDER("Concrete Powder", "concrete_powder", MenuItems::getConcretePowder),
+    BED("Bed", "bed", MenuItems::getBeds),
+    CANDLE("Candle", "candle", MenuItems::getCandles),
+    BANNER("Banner", "banner", MenuItems::getBanners),
+    GLASS_PANE("Glass Pane", "glass_pane", MenuItems::getGlassPanes),
+    GLASS("Glass", "glass", MenuItems::getGlass);
 
     private final String readableName;
+    private final String filterKey;
     private final Supplier<ItemStack[]> itemSupplier;
 
-    private static final Map<String, BlockPalletMenuType> nameToType = new HashMap<>();
-
+    private static final Map<String, BlockPalletMenuType> keyToType = new HashMap<>();
     static {
         for (BlockPalletMenuType type : values()) {
-            nameToType.put(type.getReadableName().toLowerCase(), type);
+            keyToType.put(type.filterKey, type);
         }
     }
 
@@ -43,27 +43,43 @@ public enum BlockPalletMenuType {
      * Complete list of all supported filter keys (for tab completion).
      */
     public static final List<String> FILTER_OPTIONS =
-            Collections.unmodifiableList(Arrays.asList(
-                    "color", "slabs", "stairs", "walls", "logs", "leaves", "fences",
-                    "carpet", "wool", "terracotta", "concrete", "concrete_powder",
-                    "bed", "candle", "banner", "glass_pane", "signs", "shulker_boxes",
-                    "gates", "glass"
-            ));
+            Collections.unmodifiableList(
+                    Arrays.stream(values())
+                            .map(BlockPalletMenuType::getFilterKey)
+                            .collect(Collectors.toList())
+            );
 
-    BlockPalletMenuType(String readableName, Supplier<ItemStack[]> itemSupplier) {
+    BlockPalletMenuType(String readableName, String filterKey, Supplier<ItemStack[]> itemSupplier) {
         this.readableName = readableName;
+        this.filterKey = filterKey;
         this.itemSupplier = itemSupplier;
     }
 
+    /**
+     * @return human-readable menu title
+     */
     public String getReadableName() {
         return readableName;
     }
 
+    /**
+     * @return the key used for filtering/tab-completion
+     */
+    public String getFilterKey() {
+        return filterKey;
+    }
+
+    /**
+     * @return supplier for the menu's ItemStack array
+     */
     public Supplier<ItemStack[]> getItemSupplier() {
         return itemSupplier;
     }
 
-    public static BlockPalletMenuType getMenuType(String readableName) {
-        return nameToType.get(readableName.toLowerCase());
+    /**
+     * Lookup enum by filter key (case-insensitive)
+     */
+    public static BlockPalletMenuType getMenuType(String key) {
+        return keyToType.get(key.toLowerCase());
     }
 }
