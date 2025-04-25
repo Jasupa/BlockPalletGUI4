@@ -14,23 +14,23 @@ public class FilterMenu extends AbstractMenu {
 
     private final BlockPalletManager manager;
 
-    // Base64 string voor de left arrow head texture (wordt gebruikt voor de "terug"-knop)
+    // Base64 string for the left arrow head texture (used for the "back" button)
     private static final String LEFT_ARROW =
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90"
                     + "ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0"
                     + "ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYx"
                     + "YzQyMzYyMTQyYmFlMWVkZDUifX19";
 
-    // Map waarmee de slotindex wordt gekoppeld aan de filternaam (afgeleid van BlockPalletMenuType)
+    // Maps slot index to filter name (derived from BlockPalletMenuType)
     private final Map<Integer, String> slotToFilterMap = new HashMap<>();
 
     private static final int BACK_SLOT = 36;
 
     /**
-     * Construeert de FilterMenu voor de gegeven manager en speler.
+     * Constructs the FilterMenu for the given manager and player.
      *
-     * @param manager de BlockPalletManager-instantie
-     * @param player  de speler voor wie het menu wordt aangemaakt
+     * @param manager the BlockPalletManager instance
+     * @param player  the player for whom the menu is created
      */
     public FilterMenu(BlockPalletManager manager, Player player) {
         super(5, "Filter Menu", player);
@@ -38,10 +38,10 @@ public class FilterMenu extends AbstractMenu {
     }
 
     /**
-     * Maakt het achtergrondmasker voor het menu aan.
-     * Er wordt een glas-paneel gebruikt als vulitem.
+     * Creates the background mask for the menu.
+     * A glass pane is used as the filler item.
      *
-     * @return het Mask dat toegepast wordt voordat het menu wordt geopend
+     * @return the Mask applied before the menu is opened
      */
     @Override
     protected Mask getMask() {
@@ -57,27 +57,27 @@ public class FilterMenu extends AbstractMenu {
     }
 
     /**
-     * Zet asynchroon de menu-items in (zonder de click handlers).
-     * Hierbij wordt BlockPalletMenuType gebruikt als definitie van de filters.
+     * Asynchronously sets the menu items (without click handlers).
+     * BlockPalletMenuType is used as the definition of filters.
      */
     @Override
     protected void setMenuItemsAsync() {
-        // Haal de huidige filters van de speler op.
+        // Retrieve the current filters of the player.
         Set<String> currentFilters = manager.getPlayerFilters(getMenuPlayer());
         slotToFilterMap.clear();
         int slot = 10;
 
-        // Loop door alle enum-waarden; hiermee komt de definitie van de filters centraal te staan.
+        // Loop through all enum values; centralizing filter definitions.
         for (BlockPalletMenuType type : BlockPalletMenuType.values()) {
-            // Gebruik de readable name, omgezet naar lowercase en vervang spaties door underscores;
-            // dit zorgt voor consistentie met de InventoryClickHandler.
+            // Use the readable name, converted to lowercase and spaces replaced with underscores;
+            // this ensures consistency with the InventoryClickHandler.
             String filterKey = type.getReadableName().toLowerCase().replace(" ", "_");
             boolean active = currentFilters.contains(filterKey);
             String prefix = active ? "§a✔ " : "§c✘ ";
             String displayName = prefix + type.getReadableName();
 
-            // Haal het icoon op via de item-supplier.
-            // Als er geen geldig item is, gebruik dan een barrier als fallback.
+            // Retrieve the icon via the item supplier.
+            // If there's no valid item, use a barrier as a fallback.
             ItemStack[] items = type.getItemSupplier().get();
             ItemStack filterItem;
             if (items != null && items.length > 0 && items[0] != null) {
@@ -89,7 +89,7 @@ public class FilterMenu extends AbstractMenu {
             getMenu().getSlot(slot).setItem(filterItem);
             slotToFilterMap.put(slot, filterKey);
 
-            // Pas de slotindex aan voor de gewenste lay-out.
+            // Adjust the slot index for the desired layout.
             slot++;
             if ((slot + 1) % 9 == 0) {
                 slot += 2;
@@ -97,28 +97,28 @@ public class FilterMenu extends AbstractMenu {
             if (slot >= 36) break;
         }
 
-        // Voeg de "terug"-knop toe op de toegewezen slot.
+        // Add the "back" button to the designated slot.
         ItemStack backItem = manager.createCustomHeadBase64(LEFT_ARROW, "§eBack");
         getMenu().getSlot(BACK_SLOT).setItem(backItem);
     }
 
     /**
-     * Zet de click event handlers voor de filter-items en de terugknop.
+     * Sets the click event handlers for the filter items and the back button.
      */
     @Override
     protected void setItemClickEventsAsync() {
-        // Verwerk het aan- en uitzetten van filters.
+        // Handle toggling filters on and off.
         for (Map.Entry<Integer, String> entry : slotToFilterMap.entrySet()) {
             int slot = entry.getKey();
             String filterName = entry.getValue();
             getMenu().getSlot(slot).setClickHandler((clickPlayer, clickInfo) -> {
                 Set<String> filters = manager.getPlayerFilters(clickPlayer);
-                // Toggle de filter.
+                // Toggle the filter.
                 if (filters.contains(filterName)) {
                     filters.remove(filterName);
                 } else {
                     filters.add(filterName);
-                    // Zorg dat "color" niet geselecteerd is samen met andere filters.
+                    // Ensure that "color" is not selected alongside other filters.
                     if (!filterName.equals("color")) {
                         filters.remove("color");
                     }
@@ -127,12 +127,12 @@ public class FilterMenu extends AbstractMenu {
                 new FilterMenu(manager, clickPlayer).open();
             });
         }
-        // Verwerk de "terug"-knop.
+        // Handle the "back" button.
         getMenu().getSlot(BACK_SLOT).setClickHandler((player, info) -> manager.openBlockMenu(player));
     }
 
     /**
-     * Opent de FilterMenu voor de speler.
+     * Opens the FilterMenu for the player.
      */
     public void open() {
         setPreviewItems();

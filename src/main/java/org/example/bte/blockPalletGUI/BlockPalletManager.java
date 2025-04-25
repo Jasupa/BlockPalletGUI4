@@ -11,11 +11,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 /**
- * Bevat per‑speler filters/pages en delegeert
- * het menu‑bouwen naar BlockListMenu.open(...)
+ * Holds per-player filters/pages and delegates
+ * menu-building to BlockListMenu.open(...)
  */
 public class BlockPalletManager {
-    // gemaakt public zodat andere klassen (InventoryClickHandler, FilterMenu) dit kunnen gebruiken
+    // made public so other classes (InventoryClickHandler, FilterMenu) can use this
     public static final int PAGE_SIZE = 36;
 
     private final Map<UUID, List<String>> playerFilterMap = new HashMap<>();
@@ -42,12 +42,12 @@ public class BlockPalletManager {
 
     public BlockPalletManager() {}
 
-    /** Hoofdingang om het block‑menu te openen */
+    /** Main entry point to open the block menu */
     public void openBlockMenu(Player player) {
         BlockListMenu.open(this, player);
     }
 
-    /** Gebruikt door InventoryClickHandler om pagina te wisselen */
+    /** Used by InventoryClickHandler to switch pages */
     public void handlePageClick(Player player, boolean isNext) {
         int current = playerPageMap.getOrDefault(player.getUniqueId(), 0);
         current += isNext ? 1 : -1;
@@ -56,21 +56,21 @@ public class BlockPalletManager {
         openBlockMenu(player);
     }
 
-    /** Haalt de huidige filters op (FilterMenu) */
+    /** Retrieves the current filters (FilterMenu) */
     public Set<String> getPlayerFilters(Player player) {
         return new HashSet<>(
                 playerFilterMap.getOrDefault(player.getUniqueId(), Collections.emptyList())
         );
     }
 
-    /** Past de filters aan en houdt ze bij (FilterMenu) */
+    /** Updates and keeps track of filters (FilterMenu) */
     public void updatePlayerFilters(Player player, Set<String> filters) {
         playerFilterMap.put(player.getUniqueId(), new ArrayList<>(filters));
     }
 
     /**
-     * Handig om filters meteen in te stellen én menu opnieuw te openen
-     * (bijv. na klik in FilterMenu).
+     * Convenient to set filters immediately and reopen the menu
+     * (e.g., after a click in FilterMenu).
      */
     public void setPlayerFiltersAndOpen(Player player, String... filters) {
         if (filters == null || filters.length == 0) {
@@ -84,7 +84,7 @@ public class BlockPalletManager {
         openBlockMenu(player);
     }
 
-    // ─── package‑private hulpjes voor BlockListMenu.open(...) ───
+    // ─── package-private helpers for BlockListMenu.open(...) ───
 
     int getPlayerPage(Player player) {
         return playerPageMap.getOrDefault(player.getUniqueId(), 0);
