@@ -59,7 +59,7 @@ public class BlockListMenu extends AbstractPaginatedMenu {
         int totalPages = (int) Math.ceil((double) getSource().size() / BlockPalletManager.PAGE_SIZE);
         String pageText = getPage() + "/" + Math.max(totalPages, 1);
         getMenu().getSlot(49)
-                .setItem(manager.createCustomHeadBase64(BlockPalletManager.HEAD_BETWEEN_ARROWS, pageText));
+                .setItem(Item.createCustomHeadBase64(BlockPalletManager.HEAD_BETWEEN_ARROWS, pageText, null));
     }
 
     /**
@@ -123,13 +123,13 @@ public class BlockListMenu extends AbstractPaginatedMenu {
 
         // previous and next arrows
         menu.getSlot(48)
-                .setItem(manager.createCustomHeadBase64(BlockPalletManager.LEFT_ARROW, "Previous Page"));
+                .setItem(Item.createCustomHeadBase64(BlockPalletManager.LEFT_ARROW, "Previous Page", null));
         menu.getSlot(50)
-                .setItem(manager.createCustomHeadBase64(BlockPalletManager.RIGHT_ARROW, "Next Page"));
+                .setItem(Item.createCustomHeadBase64(BlockPalletManager.RIGHT_ARROW, "Next Page", null));
 
         // placeholder for page indicator (actual text set in preview)
         menu.getSlot(49)
-                .setItem(manager.createCustomHeadBase64(BlockPalletManager.HEAD_BETWEEN_ARROWS, ""));
+                .setItem(Item.createCustomHeadBase64(BlockPalletManager.HEAD_BETWEEN_ARROWS, "", null));
 
         // attach click handlers for paging
         setSwitchPageItemClickEvents(49);

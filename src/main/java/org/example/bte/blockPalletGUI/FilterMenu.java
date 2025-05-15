@@ -98,7 +98,7 @@ public class FilterMenu extends AbstractMenu {
         }
 
         // Add the "back" button to the designated slot.
-        ItemStack backItem = manager.createCustomHeadBase64(LEFT_ARROW, "§eBack");
+        ItemStack backItem = Item.createCustomHeadBase64(LEFT_ARROW, "§eBack", null);
         getMenu().getSlot(BACK_SLOT).setItem(backItem);
     }
 

@@ -117,18 +117,4 @@ public class BlockPalletManager {
         return item;
     }
 
-    ItemStack createCustomHeadBase64(String base64, String displayName) {
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-        skull = Bukkit.getUnsafe().modifyItemStack(
-                skull,
-                "{SkullOwner:{Id:\"" + UUID.randomUUID() +
-                        "\",Properties:{textures:[{Value:\"" + base64 + "\"}]}}}"
-        );
-        ItemMeta m = skull.getItemMeta();
-        if (m != null) {
-            m.setDisplayName(displayName);
-            skull.setItemMeta(m);
-        }
-        return skull;
-    }
 }
